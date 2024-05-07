@@ -24,7 +24,7 @@ func main() {
 	defer conn.Close()
 
 	for {
-		buf := make([]byte, 124)
+		buf := make([]byte, 1024)
 
 		_, err = conn.Read(buf)
 		if err != nil {
