@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"strings"
 )
 
 func main() {
@@ -28,8 +29,28 @@ func main() {
 			fmt.Println(err)
 		}
 		fmt.Println(value)
+		if value.typ != "array" {
+			fmt.Println("Invalid request expected array")
+			//should return error at some point
+			continue
+		}
+		if len(value.array) <= 0 {
+			fmt.Println("Invalid request, no args")
+			//should return error at some point
+			continue
+		}
+
 		fmt.Println(string(value.Marshal()))
-		rVal := Value{typ: "string", str: "PONG"}
+		handler, ok := Handlers[strings.ToUpper(value.array[0].bulk)]
+		if !ok {
+			fmt.Println("command not found")
+			notFoundVal := Value{typ: "string", str: ""}
+			conn.Write(notFoundVal.Marshal())
+			//shoudl write error at some point
+			continue
+		}
+		args := value.array[1:]
+		rVal := handler(args)
 		conn.Write(rVal.Marshal())
 	}
 
