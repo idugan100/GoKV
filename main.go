@@ -58,7 +58,10 @@ func handleConnection(conn net.Conn) {
 			continue
 		}
 		args := value.array[1:]
+		fmt.Println(args)
 		rVal := handler(args)
+		fmt.Println(rVal)
+		fmt.Println(rVal.Marshal())
 		conn.Write(rVal.Marshal())
 	}
 }
