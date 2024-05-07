@@ -28,7 +28,9 @@ func main() {
 			fmt.Println(err)
 		}
 		fmt.Println(value)
-		conn.Write([]byte("+OK\r\n"))
+		fmt.Println(string(value.Marshal()))
+		rVal := Value{typ: "string", str: "PONG"}
+		conn.Write(rVal.Marshal())
 	}
 
 }
