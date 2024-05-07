@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"strings"
 )
@@ -14,21 +15,29 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+	for {
+		conn, err := l.Accept()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer conn.Close()
 
-	conn, err := l.Accept()
-	if err != nil {
-		fmt.Println(err)
-		return
+		go handleConnection(conn)
 	}
-	defer conn.Close()
+}
+
+func handleConnection(conn net.Conn) {
 
 	for {
 		r := NewResp(conn)
 		value, err := r.Read()
 		if err != nil {
 			fmt.Println(err)
+			if err == io.EOF {
+				return
+			}
 		}
-		fmt.Println(value)
 		if value.typ != "array" {
 			fmt.Println("Invalid request expected array")
 			//should return error at some point
@@ -40,7 +49,6 @@ func main() {
 			continue
 		}
 
-		fmt.Println(string(value.Marshal()))
 		handler, ok := Handlers[strings.ToUpper(value.array[0].bulk)]
 		if !ok {
 			fmt.Println("command not found")
@@ -53,5 +61,4 @@ func main() {
 		rVal := handler(args)
 		conn.Write(rVal.Marshal())
 	}
-
 }
