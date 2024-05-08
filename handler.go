@@ -15,6 +15,7 @@ var Handlers = map[string]func([]Value) Value{
 	"DEL":       del,
 	"RANDOMKEY": randkey,
 	"EXISTS":    exists,
+	"STRLEN":    strlen,
 }
 
 func ping(args []Value) Value {
@@ -75,6 +76,7 @@ func randkey(args []Value) Value {
 	randNum := rand.Intn(len(setData))
 	var randKey string
 	counter := 0
+	setMU.RLock()
 	for key, _ := range setData {
 		if counter == randNum {
 			randKey = key
@@ -82,7 +84,7 @@ func randkey(args []Value) Value {
 		}
 		counter++
 	}
-
+	setMU.RUnlock()
 	return Value{typ: "bulk", bulk: randKey}
 }
 
@@ -92,10 +94,24 @@ func exists(args []Value) Value {
 	}
 	counter := 0
 	for _, a := range args {
+		setMU.RLock()
 		_, ok := setData[a.bulk]
+		setMU.RUnlock()
 		if ok {
 			counter++
 		}
 	}
 	return Value{typ: "integer", num: counter}
+}
+
+func strlen(args []Value) Value {
+	if len(args) != 1 {
+		return Value{typ: "error", str: "incorrect number of args for strlen command"}
+	}
+	setMU.RLock()
+	val := setData[args[0].bulk]
+	setMU.RUnlock()
+
+	return Value{typ: "integer", num: len(val)}
+
 }
