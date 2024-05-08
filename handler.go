@@ -16,6 +16,7 @@ var Handlers = map[string]func([]Value) Value{
 	"RANDOMKEY": randkey,
 	"EXISTS":    exists,
 	"STRLEN":    strlen,
+	"LOLWUT":    lolwut,
 }
 
 func ping(args []Value) Value {
@@ -114,4 +115,8 @@ func strlen(args []Value) Value {
 
 	return Value{typ: "integer", num: len(val)}
 
+}
+
+func lolwut(args []Value) Value {
+	return Value{typ: "bulk", bulk: "GoKV 0.1 :):):)\r\n"}
 }
