@@ -2,20 +2,22 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"sync"
 )
 
 var setData = map[string]string{}
 var setMU = sync.RWMutex{}
 var Handlers = map[string]func([]Value) Value{
-	"PING": ping,
-	"SET":  set,
-	"GET":  get,
-	"DEL":  del,
+	"PING":      ping,
+	"SET":       set,
+	"GET":       get,
+	"DEL":       del,
+	"RANDOMKEY": randkey,
 }
 
 func ping(args []Value) Value {
-	return Value{typ: "string", str: "PONG"}
+	return Value{typ: "bulk", bulk: "PONG"}
 }
 
 func set(args []Value) Value {
@@ -28,7 +30,7 @@ func set(args []Value) Value {
 	setData[key] = val
 	setMU.Unlock()
 
-	return Value{typ: "string", str: "OK"}
+	return Value{typ: "bulk", bulk: "OK"}
 }
 
 func get(args []Value) Value {
@@ -38,9 +40,12 @@ func get(args []Value) Value {
 	var val string
 
 	setMU.RLock()
-	val = setData[args[0].bulk]
+	val, ok := setData[args[0].bulk]
 	setMU.RUnlock()
-	return Value{typ: "string", str: val}
+	if !ok {
+		return Value{typ: "null"}
+	}
+	return Value{typ: "bulk", bulk: val}
 }
 
 func del(args []Value) Value {
@@ -59,4 +64,23 @@ func del(args []Value) Value {
 	setMU.Unlock()
 	fmt.Println("reached here deleted ", deletedCounter)
 	return Value{typ: "integer", num: deletedCounter}
+}
+
+func randkey(args []Value) Value {
+	if len(setData) == 0 {
+		return Value{typ: "null"}
+	}
+
+	randNum := rand.Intn(len(setData))
+	var randKey string
+	counter := 0
+	for key, _ := range setData {
+		if counter == randNum {
+			randKey = key
+			break
+		}
+		counter++
+	}
+
+	return Value{typ: "bulk", bulk: randKey}
 }
