@@ -14,6 +14,7 @@ var Handlers = map[string]func([]Value) Value{
 	"GET":       get,
 	"DEL":       del,
 	"RANDOMKEY": randkey,
+	"EXISTS":    exists,
 }
 
 func ping(args []Value) Value {
@@ -83,4 +84,18 @@ func randkey(args []Value) Value {
 	}
 
 	return Value{typ: "bulk", bulk: randKey}
+}
+
+func exists(args []Value) Value {
+	if len(args) < 1 {
+		return Value{typ: "error", str: "incorrect number of args for exisits command"}
+	}
+	counter := 0
+	for _, a := range args {
+		_, ok := setData[a.bulk]
+		if ok {
+			counter++
+		}
+	}
+	return Value{typ: "integer", num: counter}
 }
