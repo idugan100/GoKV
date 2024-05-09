@@ -7,35 +7,35 @@ import (
 )
 
 // this is a mock for the network connection that is read from and written to
-type TestingReadWriter struct {
+type ConnectionMock struct {
 	*bytes.Buffer
 	*strings.Reader
 }
 
-func (rw TestingReadWriter) Read(p []byte) (n int, err error) {
-	return rw.Reader.Read(p)
+func (c ConnectionMock) Read(p []byte) (n int, err error) {
+	return c.Reader.Read(p)
 }
 
-func (rw TestingReadWriter) Write(p []byte) (n int, err error) {
-	return rw.Buffer.Write(p)
+func (c ConnectionMock) Write(p []byte) (n int, err error) {
+	return c.Buffer.Write(p)
 }
 
-func (rw TestingReadWriter) Close() error {
+func (c ConnectionMock) Close() error {
 	return nil
 }
 
-func getTestingReadWriter(inputString string) TestingReadWriter {
+func getConnectionMock(inputString string) ConnectionMock {
 	inputStringReader := strings.NewReader(inputString)
 	var b bytes.Buffer
 
-	s := TestingReadWriter{
+	c := ConnectionMock{
 		Buffer: &b,
 		Reader: inputStringReader,
 	}
-	return s
+	return c
 }
 func TestHandleGetSetCommands(t *testing.T) {
-	conn := getTestingReadWriter("*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n")
+	conn := getConnectionMock("*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n")
 
 	handleConnection(conn)
 
@@ -43,7 +43,7 @@ func TestHandleGetSetCommands(t *testing.T) {
 		t.Errorf("expected response of ok got response of %s", conn.String())
 	}
 
-	conn1 := getTestingReadWriter("*2\r\n$3\r\nget\r\n$5\r\nhello\r\n")
+	conn1 := getConnectionMock("*2\r\n$3\r\nget\r\n$5\r\nhello\r\n")
 
 	handleConnection(conn1)
 
@@ -53,7 +53,7 @@ func TestHandleGetSetCommands(t *testing.T) {
 }
 
 func TestHandlePingCommand(t *testing.T) {
-	conn := getTestingReadWriter("*1\r\n$4\r\nPING\r\n")
+	conn := getConnectionMock("*1\r\n$4\r\nPING\r\n")
 
 	handleConnection(conn)
 
@@ -63,7 +63,7 @@ func TestHandlePingCommand(t *testing.T) {
 }
 
 func TestHandleLolWutCommand(t *testing.T) {
-	conn := getTestingReadWriter("*1\r\n$6\r\nLOLWUT\r\n")
+	conn := getConnectionMock("*1\r\n$6\r\nLOLWUT\r\n")
 
 	handleConnection(conn)
 
@@ -73,7 +73,7 @@ func TestHandleLolWutCommand(t *testing.T) {
 }
 
 func TestHandleSetCommendError(t *testing.T) {
-	conn := getTestingReadWriter("*1\r\n$3\r\nset\r\n")
+	conn := getConnectionMock("*1\r\n$3\r\nset\r\n")
 
 	handleConnection(conn)
 
@@ -83,7 +83,7 @@ func TestHandleSetCommendError(t *testing.T) {
 }
 
 func TestHandleInvalidCommand(t *testing.T) {
-	conn := getTestingReadWriter("*1\r\n$3\r\n123\r\n")
+	conn := getConnectionMock("*1\r\n$3\r\n123\r\n")
 
 	handleConnection(conn)
 
@@ -93,7 +93,7 @@ func TestHandleInvalidCommand(t *testing.T) {
 }
 
 func TestHandleIndvalidCommand(t *testing.T) {
-	conn := getTestingReadWriter("*1\r\n$3\r\n123\r\n")
+	conn := getConnectionMock("*1\r\n$3\r\n123\r\n")
 
 	handleConnection(conn)
 
