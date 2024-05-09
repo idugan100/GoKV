@@ -21,13 +21,13 @@ func main() {
 			fmt.Println(err)
 			return
 		}
-		defer conn.Close()
 
 		go handleConnection(conn)
 	}
 }
 
-func handleConnection(conn io.ReadWriter) {
+func handleConnection(conn io.ReadWriteCloser) {
+	defer conn.Close()
 
 	for {
 		r := NewResp(conn)

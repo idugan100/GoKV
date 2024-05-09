@@ -20,6 +20,10 @@ func (rw TestingReadWriter) Write(p []byte) (n int, err error) {
 	return rw.Buffer.Write(p)
 }
 
+func (rw TestingReadWriter) Close() error {
+	return nil
+}
+
 func getTestingReadWriter(inputString string) TestingReadWriter {
 	inputStringReader := strings.NewReader(inputString)
 	var b bytes.Buffer
