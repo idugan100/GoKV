@@ -27,13 +27,13 @@ func main() {
 	}
 }
 
-func handleConnection(conn net.Conn) {
+func handleConnection(conn io.ReadWriter) {
 
 	for {
 		r := NewResp(conn)
 		value, err := r.Read()
+
 		if err != nil {
-			fmt.Println(err)
 			if err == io.EOF {
 				return
 			}
@@ -51,10 +51,8 @@ func handleConnection(conn net.Conn) {
 
 		handler, ok := Handlers[strings.ToUpper(value.array[0].bulk)]
 		if !ok {
-			fmt.Println("command not found")
-			notFoundVal := Value{typ: "string", str: ""}
+			notFoundVal := Value{typ: "error", str: "command not found"}
 			conn.Write(notFoundVal.Marshal())
-			//shoudl write error at some point
 			continue
 		}
 		args := value.array[1:]
