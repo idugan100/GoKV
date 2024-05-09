@@ -34,6 +34,7 @@ func getConnectionMock(inputString string) ConnectionMock {
 	}
 	return c
 }
+
 func TestHandleGetSetCommands(t *testing.T) {
 	conn := getConnectionMock("*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n")
 
@@ -130,4 +131,30 @@ func TestExistsCommandOnMissingKey(t *testing.T) {
 	if !strings.Contains(conn.String(), ":0") {
 		t.Errorf("expected response of command not found got response of %s", conn.String())
 	}
+}
+
+func TestExisitsCommandOnExistingKey(t *testing.T) {
+	conn := getConnectionMock("*3\r\n$3\r\nset\r\n$6\r\nthekey\r\n$5\r\nfound\r\n")
+	handleConnection(conn)
+
+	conn1 := getConnectionMock("*2\r\n$6\r\nexists\r\n$6\r\nthekey\r\n")
+	handleConnection(conn1)
+
+	if !strings.Contains(conn1.String(), ":1") {
+		t.Errorf("expected to find one, found %s", conn1.String())
+	}
+
+}
+
+func TestStrLenCommand(t *testing.T) {
+	conn := getConnectionMock("*3\r\n$3\r\nset\r\n$6\r\nlength\r\n$4\r\nfour\r\n")
+	handleConnection(conn)
+
+	conn1 := getConnectionMock("*2\r\n$6\r\nstrlen\r\n$6\r\nlength\r\n")
+	handleConnection(conn1)
+
+	if !strings.Contains(conn1.String(), ":4") {
+		t.Errorf("expected to find 4, found: %s", conn1.String())
+	}
+
 }
