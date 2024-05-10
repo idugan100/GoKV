@@ -18,6 +18,7 @@ var Handlers = map[string]func([]Value) Value{
 	"STRLEN":    strlen,
 	"LOLWUT":    lolwut,
 	"FLUSHALL":  flushall,
+	"GETSET":    getset,
 }
 
 func ping(args []Value) Value {
@@ -127,4 +128,21 @@ func flushall(args []Value) Value {
 	setData = map[string]string{}
 	setMU.Unlock()
 	return Value{typ: "string", str: "OK"}
+}
+
+func getset(args []Value) Value {
+	if len(args) != 2 {
+		return Value{typ: "error", str: "incorrect number of arguements for GETSET command"}
+	}
+	setMU.Lock()
+	oldvalue, ok := setData[args[0].bulk]
+	setData[args[0].bulk] = args[1].bulk
+	setMU.Unlock()
+
+	if !ok {
+		return Value{typ: "null"}
+	}
+
+	return Value{typ: "bulk", bulk: oldvalue}
+
 }
