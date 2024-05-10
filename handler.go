@@ -17,6 +17,7 @@ var Handlers = map[string]func([]Value) Value{
 	"EXISTS":    exists,
 	"STRLEN":    strlen,
 	"LOLWUT":    lolwut,
+	"FLUSHALL":  flushall,
 }
 
 func ping(args []Value) Value {
@@ -119,4 +120,11 @@ func strlen(args []Value) Value {
 
 func lolwut(args []Value) Value {
 	return Value{typ: "bulk", bulk: "GoKV 0.1 :):):)\r\n"}
+}
+
+func flushall(args []Value) Value {
+	setMU.Lock()
+	setData = map[string]string{}
+	setMU.Unlock()
+	return Value{typ: "string", str: "OK"}
 }
