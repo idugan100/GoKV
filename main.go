@@ -40,12 +40,14 @@ func handleConnection(conn io.ReadWriteCloser) {
 		}
 		if value.typ != "array" {
 			fmt.Println("Invalid request expected array")
-			//should return error at some point
+			v := Value{typ: "error", str: "invalid input type expected array"}
+			conn.Write(v.Marshal())
 			continue
 		}
 		if len(value.array) <= 0 {
 			fmt.Println("Invalid request, no args")
-			//should return error at some point
+			v := Value{typ: "error", str: "invalid input request no args"}
+			conn.Write(v.Marshal())
 			continue
 		}
 
