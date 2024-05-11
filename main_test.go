@@ -158,3 +158,11 @@ func TestStrLenCommand(t *testing.T) {
 	}
 
 }
+
+func TestUnknownCommand(t *testing.T) {
+	conn := getConnectionMock("*1\r\n$3\r\nxyz\r\n")
+	handleConnection(conn)
+	if !strings.Contains(conn.String(), "command not found") {
+		t.Errorf("expected command not found. Got: %s", conn.String())
+	}
+}
