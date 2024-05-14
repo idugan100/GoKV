@@ -8,7 +8,7 @@ import (
 
 var setData = map[string]string{}
 var setMU = sync.RWMutex{}
-var Handlers = map[string]func([]Value) Value{
+var Handlers = map[string]func([]Serializable) Serializable{
 	"PING":      ping,
 	"SET":       set,
 	"GET":       get,
@@ -21,13 +21,13 @@ var Handlers = map[string]func([]Value) Value{
 	"GETSET":    getset,
 }
 
-func ping(args []Value) Value {
-	return Value{typ: "bulk", bulk: "PONG"}
+func ping(args []Serializable) Serializable {
+	return Serializable{typ: "bulk", bulk: "PONG"}
 }
 
-func set(args []Value) Value {
+func set(args []Serializable) Serializable {
 	if len(args) != 2 {
-		return Value{typ: "error", str: "incorrect number of arg for SET command"}
+		return Serializable{typ: "error", str: "incorrect number of arg for SET command"}
 	}
 	key := args[0].bulk
 	val := args[1].bulk
@@ -35,12 +35,12 @@ func set(args []Value) Value {
 	setData[key] = val
 	setMU.Unlock()
 
-	return Value{typ: "bulk", bulk: "OK"}
+	return Serializable{typ: "bulk", bulk: "OK"}
 }
 
-func get(args []Value) Value {
+func get(args []Serializable) Serializable {
 	if len(args) != 1 {
-		return Value{typ: "error", str: "incorrect number of arg for GET command"}
+		return Serializable{typ: "error", str: "incorrect number of arg for GET command"}
 	}
 	var val string
 
@@ -48,14 +48,14 @@ func get(args []Value) Value {
 	val, ok := setData[args[0].bulk]
 	setMU.RUnlock()
 	if !ok {
-		return Value{typ: "null"}
+		return Serializable{typ: "null"}
 	}
-	return Value{typ: "bulk", bulk: val}
+	return Serializable{typ: "bulk", bulk: val}
 }
 
-func del(args []Value) Value {
+func del(args []Serializable) Serializable {
 	if len(args) < 1 {
-		return Value{typ: "error", str: "incorrect number of args for DEL command"}
+		return Serializable{typ: "error", str: "incorrect number of args for DEL command"}
 	}
 	deletedCounter := 0
 	setMU.Lock()
@@ -68,12 +68,12 @@ func del(args []Value) Value {
 	}
 	setMU.Unlock()
 	fmt.Println("reached here deleted ", deletedCounter)
-	return Value{typ: "integer", num: deletedCounter}
+	return Serializable{typ: "integer", num: deletedCounter}
 }
 
-func randkey(args []Value) Value {
+func randkey(args []Serializable) Serializable {
 	if len(setData) == 0 {
-		return Value{typ: "null"}
+		return Serializable{typ: "null"}
 	}
 
 	randNum := rand.Intn(len(setData))
@@ -88,12 +88,12 @@ func randkey(args []Value) Value {
 		counter++
 	}
 	setMU.RUnlock()
-	return Value{typ: "bulk", bulk: randKey}
+	return Serializable{typ: "bulk", bulk: randKey}
 }
 
-func exists(args []Value) Value {
+func exists(args []Serializable) Serializable {
 	if len(args) < 1 {
-		return Value{typ: "error", str: "incorrect number of args for exisits command"}
+		return Serializable{typ: "error", str: "incorrect number of args for exisits command"}
 	}
 	counter := 0
 	for _, a := range args {
@@ -104,45 +104,45 @@ func exists(args []Value) Value {
 			counter++
 		}
 	}
-	return Value{typ: "integer", num: counter}
+	return Serializable{typ: "integer", num: counter}
 }
 
-func strlen(args []Value) Value {
+func strlen(args []Serializable) Serializable {
 	if len(args) != 1 {
-		return Value{typ: "error", str: "incorrect number of args for strlen command"}
+		return Serializable{typ: "error", str: "incorrect number of args for strlen command"}
 	}
 	setMU.RLock()
 	val := setData[args[0].bulk]
 	setMU.RUnlock()
 
-	return Value{typ: "integer", num: len(val)}
+	return Serializable{typ: "integer", num: len(val)}
 
 }
 
-func lolwut(args []Value) Value {
-	return Value{typ: "bulk", bulk: "GoKV 0.1 :):):)\r\n"}
+func lolwut(args []Serializable) Serializable {
+	return Serializable{typ: "bulk", bulk: "GoKV 0.1 :):):)\r\n"}
 }
 
-func flushall(args []Value) Value {
+func flushall(args []Serializable) Serializable {
 	setMU.Lock()
 	setData = map[string]string{}
 	setMU.Unlock()
-	return Value{typ: "string", str: "OK"}
+	return Serializable{typ: "string", str: "OK"}
 }
 
-func getset(args []Value) Value {
+func getset(args []Serializable) Serializable {
 	if len(args) != 2 {
-		return Value{typ: "error", str: "incorrect number of arguements for GETSET command"}
+		return Serializable{typ: "error", str: "incorrect number of arguements for GETSET command"}
 	}
 	setMU.Lock()
-	oldvalue, ok := setData[args[0].bulk]
+	oldSerializable, ok := setData[args[0].bulk]
 	setData[args[0].bulk] = args[1].bulk
 	setMU.Unlock()
 
 	if !ok {
-		return Value{typ: "null"}
+		return Serializable{typ: "null"}
 	}
 
-	return Value{typ: "bulk", bulk: oldvalue}
+	return Serializable{typ: "bulk", bulk: oldSerializable}
 
 }

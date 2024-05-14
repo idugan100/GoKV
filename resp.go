@@ -15,12 +15,12 @@ const (
 	ARRAY   = '*'
 )
 
-type Value struct {
+type Serializable struct {
 	typ   string
 	str   string
 	num   int
 	bulk  string
-	array []Value
+	array []Serializable
 }
 
 type Resp struct {
@@ -59,10 +59,10 @@ func (r *Resp) readInteger() (x int, n int, err error) {
 	return int(num), n, nil
 }
 
-func (r *Resp) Read() (Value, error) {
+func (r *Resp) Read() (Serializable, error) {
 	_type, err := r.reader.ReadByte()
 	if err != nil {
-		return Value{}, err
+		return Serializable{}, err
 	}
 	switch _type {
 	case ARRAY:
@@ -71,19 +71,19 @@ func (r *Resp) Read() (Value, error) {
 		return r.readBulk()
 	default:
 		fmt.Printf("unknown type %s", string(_type))
-		return Value{}, nil
+		return Serializable{}, nil
 	}
 }
 
-func (r *Resp) readArray() (Value, error) {
-	v := Value{}
+func (r *Resp) readArray() (Serializable, error) {
+	v := Serializable{}
 	v.typ = "array"
 	length, _, err := r.readInteger()
 	if err != nil {
 		return v, err
 	}
 
-	v.array = make([]Value, 0)
+	v.array = make([]Serializable, 0)
 
 	for i := 0; i < length; i++ {
 		val, err := r.Read()
@@ -95,8 +95,8 @@ func (r *Resp) readArray() (Value, error) {
 	return v, nil
 }
 
-func (r *Resp) readBulk() (Value, error) {
-	v := Value{}
+func (r *Resp) readBulk() (Serializable, error) {
+	v := Serializable{}
 	v.typ = "bulk"
 	len, _, err := r.readInteger()
 	if err != nil {
@@ -115,7 +115,7 @@ func (r *Resp) readBulk() (Value, error) {
 
 }
 
-func (v Value) Marshal() []byte {
+func (v Serializable) Marshal() []byte {
 	switch v.typ {
 	case "array":
 		return v.marshalArray()
@@ -134,7 +134,7 @@ func (v Value) Marshal() []byte {
 	}
 }
 
-func (v Value) marshalInt() []byte {
+func (v Serializable) marshalInt() []byte {
 	var bytes []byte
 	bytes = append(bytes, INTEGER)
 	bytes = append(bytes, strconv.Itoa(v.num)...)
@@ -142,7 +142,7 @@ func (v Value) marshalInt() []byte {
 	return bytes
 }
 
-func (v Value) marshalBulk() []byte {
+func (v Serializable) marshalBulk() []byte {
 	var bytes []byte
 	bytes = append(bytes, BULK)
 	bytes = append(bytes, strconv.Itoa(len(v.bulk))...)
@@ -152,7 +152,7 @@ func (v Value) marshalBulk() []byte {
 	return bytes
 }
 
-func (v Value) marshalString() []byte {
+func (v Serializable) marshalString() []byte {
 	var bytes []byte
 	bytes = append(bytes, STRING)
 	bytes = append(bytes, v.str...)
@@ -160,7 +160,7 @@ func (v Value) marshalString() []byte {
 	return bytes
 }
 
-func (v Value) marshalArray() []byte {
+func (v Serializable) marshalArray() []byte {
 	var bytes []byte
 	length := len(v.array)
 	bytes = append(bytes, ARRAY)
@@ -174,7 +174,7 @@ func (v Value) marshalArray() []byte {
 
 }
 
-func (v Value) marshalError() []byte {
+func (v Serializable) marshalError() []byte {
 	var bytes []byte
 	bytes = append(bytes, ERROR)
 	bytes = append(bytes, v.str...)
@@ -182,6 +182,6 @@ func (v Value) marshalError() []byte {
 	return bytes
 }
 
-func (v Value) marshalNull() []byte {
+func (v Serializable) marshalNull() []byte {
 	return []byte("_\r\n")
 }

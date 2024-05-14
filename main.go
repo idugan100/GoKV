@@ -31,33 +31,33 @@ func handleConnection(conn io.ReadWriteCloser) {
 
 	for {
 		r := NewResp(conn)
-		value, err := r.Read()
+		serializable, err := r.Read()
 
 		if err != nil {
 			if err == io.EOF {
 				return
 			}
 		}
-		if value.typ != "array" {
+		if serializable.typ != "array" {
 			fmt.Println("Invalid request expected array")
-			v := Value{typ: "error", str: "invalid input type expected array"}
+			v := Serializable{typ: "error", str: "invalid input type expected array"}
 			conn.Write(v.Marshal())
 			continue
 		}
-		if len(value.array) <= 0 {
+		if len(serializable.array) <= 0 {
 			fmt.Println("Invalid request, no args")
-			v := Value{typ: "error", str: "invalid input request no args"}
+			v := Serializable{typ: "error", str: "invalid input request no args"}
 			conn.Write(v.Marshal())
 			continue
 		}
 
-		handler, ok := Handlers[strings.ToUpper(value.array[0].bulk)]
+		handler, ok := Handlers[strings.ToUpper(serializable.array[0].bulk)]
 		if !ok {
-			notFoundVal := Value{typ: "error", str: "command not found"}
+			notFoundVal := Serializable{typ: "error", str: "command not found"}
 			conn.Write(notFoundVal.Marshal())
 			continue
 		}
-		args := value.array[1:]
+		args := serializable.array[1:]
 		rVal := handler(args)
 		conn.Write(rVal.Marshal())
 	}
