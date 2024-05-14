@@ -80,7 +80,7 @@ func randkey(args []Serializable) Serializable {
 	var randKey string
 	counter := 0
 	setMU.RLock()
-	for key, _ := range setData {
+	for key := range setData {
 		if counter == randNum {
 			randKey = key
 			break
