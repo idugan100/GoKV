@@ -98,12 +98,12 @@ func (r *Resp) readArray() (Serializable, error) {
 func (r *Resp) readBulk() (Serializable, error) {
 	v := Serializable{}
 	v.typ = "bulk"
-	len, _, err := r.readInteger()
+	length, _, err := r.readInteger()
 	if err != nil {
 		return v, err
 	}
 
-	bulk := make([]byte, len)
+	bulk := make([]byte, length)
 
 	r.reader.Read(bulk)
 
