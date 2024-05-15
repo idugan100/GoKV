@@ -204,3 +204,34 @@ func TestHandleHgetIncorrectNumberArgs(t *testing.T) {
 		t.Errorf("expected error about incorrect number of arguements got response of %s", conn.String())
 	}
 }
+
+func TestHandleHexists(t *testing.T) {
+	conn := getConnectionMock("*8\r\n$4\r\nhset\r\n$6\r\nmyinfo\r\n$4\r\nname\r\n$5\r\nisaac\r\n$3\r\nage\r\n$2\r\n20\r\n$3\r\njob\r\n$3\r\nswe\r\n")
+
+	handleConnection(conn)
+
+	conn1 := getConnectionMock("*3\r\n$7\r\nhexists\r\n$6\r\nmyinfo\r\n$3\r\nage\r\n")
+	handleConnection(conn1)
+
+	if !strings.Contains(conn1.String(), ":1") {
+		t.Errorf("expected result of 1, got %s", conn1.String())
+	}
+}
+
+func TestHandleHexistsMissingArgs(t *testing.T) {
+	conn := getConnectionMock("*2\r\n$7\r\nhexists\r\n$6\r\nmyinfo\r\n")
+	handleConnection(conn)
+
+	if !strings.Contains(conn.String(), "incorrect number") {
+		t.Errorf("expected result of incorrect number of args error, got %s", conn.String())
+	}
+}
+
+func TestHandleHexistsNotFound(t *testing.T) {
+	conn := getConnectionMock("*3\r\n$7\r\nhexists\r\n$6\r\nkey\r\n$5\r\nvalue\r\n")
+	handleConnection(conn)
+
+	if !strings.Contains(conn.String(), ":0") {
+		t.Errorf("expected result of 0, got %s", conn.String())
+	}
+}
