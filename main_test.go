@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"net"
 	"strings"
 	"testing"
 )
@@ -33,6 +34,33 @@ func getConnectionMock(inputString string) ConnectionMock {
 		Reader: inputStringReader,
 	}
 	return c
+}
+func TestStartServer(t *testing.T) {
+	go startServer()
+	conn, err := net.Dial("tcp", "localhost:6379")
+
+	if err != nil {
+		t.Errorf("error when connecting to GoKV server %s", err.Error())
+	}
+	defer conn.Close()
+
+	message := "*1\r\n$4\r\nPING\r\n"
+	_, err = conn.Write([]byte(message))
+	if err != nil {
+		t.Errorf("error when sending message over tcp connection %s", err.Error())
+	}
+
+	response := make([]byte, 1024)
+	_, err = conn.Read(response)
+
+	if err != nil {
+		t.Errorf("error when sending message over tcp connection %s", err.Error())
+	}
+
+	if !strings.Contains(string(response), "PONG") {
+		t.Errorf("expected response of PONG, recieved %s", string(response))
+	}
+
 }
 
 func TestHandleGetSetCommands(t *testing.T) {

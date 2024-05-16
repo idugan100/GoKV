@@ -8,8 +8,11 @@ import (
 )
 
 func main() {
-	fmt.Println("starting GoKV server ...")
+	startServer()
+}
 
+func startServer() {
+	fmt.Println("starting GoKV server ...")
 	l, err := net.Listen("tcp", ":6379")
 	if err != nil {
 		fmt.Println(err)
