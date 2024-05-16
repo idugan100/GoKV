@@ -37,7 +37,7 @@ func (r *Resp) readLine() (line []byte, n int, err error) {
 		if err != nil {
 			return nil, 0, err
 		}
-		n += 1
+		n++
 		line = append(line, b)
 		if len(line) >= 2 && line[len(line)-2] == '\r' {
 			break
