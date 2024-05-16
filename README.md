@@ -17,3 +17,10 @@ This is a simple in-memory key-value store written in Go. All it's commands are 
 - [HSET](https://redis.io/docs/latest/commands/hset/)
 - [HGET](https://redis.io/docs/latest/commands/hget/)
 - [HEXISTS](https://redis.io/docs/latest/commands/hexists/)
+
+# Benchmark
+```
+$ redis-benchmark -t set,get, -n 100000 -q                                                                                                                               
+SET: 92250.92 requests per second, p50=0.271 msec
+GET: 93632.96 requests per second, p50=0.271 msec  
+```
