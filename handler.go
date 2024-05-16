@@ -177,21 +177,21 @@ func hget(args []Serializable) Serializable {
 
 	_, ok := HsetData[args[0].bulk]
 
-	if ok {
-		var resultList []Serializable
-		for i := 1; i < len(args); i++ {
-			value, ok := HsetData[args[0].bulk][args[i].bulk]
-			if ok {
-				resultList = append(resultList, Serializable{typ: "bulk", bulk: value})
-			} else {
-				resultList = append(resultList, Serializable{typ: "null"})
-			}
-		}
-		return Serializable{typ: "array", array: resultList}
-	} else {
-
+	if !ok {
 		return Serializable{typ: "null"}
 	}
+
+	var resultList []Serializable
+	for i := 1; i < len(args); i++ {
+		value, ok := HsetData[args[0].bulk][args[i].bulk]
+		if !ok {
+			resultList = append(resultList, Serializable{typ: "null"})
+			continue
+		}
+		resultList = append(resultList, Serializable{typ: "bulk", bulk: value})
+
+	}
+	return Serializable{typ: "array", array: resultList}
 
 }
 
@@ -200,14 +200,13 @@ func hexists(args []Serializable) Serializable {
 		return Serializable{typ: "error", str: "incorrect number of args, expected hashkey and field key"}
 	}
 	HsetMU.RLock()
-	defer HsetMU.RUnlock()
-	_, ok := HsetData[args[0].bulk]
-	if ok {
-		_, ok := HsetData[args[0].bulk][args[1].bulk]
-		if ok {
-			return Serializable{typ: "integer", num: 1}
-		}
-	}
-	return Serializable{typ: "integer", num: 0}
+	_, okKey := HsetData[args[0].bulk]
+	_, okValue := HsetData[args[0].bulk][args[1].bulk]
+	HsetMU.RUnlock()
 
+	if !okKey || !okValue {
+		return Serializable{typ: "integer", num: 0}
+	}
+
+	return Serializable{typ: "integer", num: 1}
 }
