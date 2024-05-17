@@ -203,7 +203,7 @@ func TestHandleHSetandHGet(t *testing.T) {
 	if !strings.Contains(conn.String(), "3") {
 		t.Errorf("expected response of 3 got response of %s", conn.String())
 	}
-	// hget myinfo name age job lol
+
 	conn1 := getConnectionMock("*6\r\n$4\r\nhget\r\n$6\r\nmyinfo\r\n$4\r\nname\r\n$3\r\nage\r\n$3\r\njob\r\n$3\r\nlol\r\n")
 
 	handleConnection(conn1)
@@ -262,4 +262,17 @@ func TestHandleHexistsNotFound(t *testing.T) {
 	if !strings.Contains(conn.String(), ":0") {
 		t.Errorf("expected result of 0, got %s", conn.String())
 	}
+}
+
+func TestHandleDel(t *testing.T) {
+	conn := getConnectionMock("*3\r\n$3\r\nSET\r\n$10\r\ndeletedkey\r\n$13\r\ndeletedvalue\r\n")
+	handleConnection(conn)
+
+	conn2 := getConnectionMock("*2\r\n$3\r\nDEL\r\n$10\r\ndeletedkey\r\n")
+	handleConnection(conn2)
+
+	if !strings.Contains(conn2.String(), ":1") {
+		t.Errorf("expected response of :1, recieved %s", conn.String())
+	}
+
 }
