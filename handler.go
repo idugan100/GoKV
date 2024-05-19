@@ -24,6 +24,7 @@ var Handlers = map[string]func([]Serializable) Serializable{
 	"HSET":      hset,
 	"HGET":      hget,
 	"HEXISTS":   hexists,
+	"HSTRLEN":   hstrlen,
 }
 
 func ping(args []Serializable) Serializable {
@@ -212,4 +213,17 @@ func hexists(args []Serializable) Serializable {
 	}
 
 	return Serializable{typ: "integer", num: 1}
+}
+
+func hstrlen(args []Serializable) Serializable {
+	if len(args) != 2 {
+		return Serializable{typ: "error", str: "incorrect number of args"}
+	}
+	HsetMU.RLock()
+	val, ok := HsetData[args[0].bulk][args[1].bulk]
+	HsetMU.RUnlock()
+	if !ok {
+		return Serializable{typ: "integer", num: 0}
+	}
+	return Serializable{typ: "integer", num: len(val)}
 }

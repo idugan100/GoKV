@@ -276,3 +276,26 @@ func TestHandleDel(t *testing.T) {
 	}
 
 }
+
+func TestHandleHstrlen(t *testing.T) {
+	conn := getConnectionMock("*4\r\n$4\r\nhset\r\n$6\r\nlength\r\n$3\r\nkey\r\n$3\r\nval\r\n")
+	handleConnection(conn)
+
+	conn2 := getConnectionMock("*3\r\n$7\r\nhstrlen\r\n$6\r\nlength\r\n$3\r\nkey\r\n")
+	handleConnection(conn2)
+
+	if !strings.Contains(conn2.String(), ":3") {
+		t.Errorf("expected :3 got value %s", conn2.String())
+	}
+
+}
+
+func TestHandleHstrlenInvalidArgs(t *testing.T) {
+	conn := getConnectionMock("*2\r\n$7\r\nhstrlen\r\n$6\r\nlength\r\n")
+	handleConnection(conn)
+
+	if !strings.Contains(conn.String(), "incorrect number") {
+		t.Errorf("expected incorrect number of args error got value %s", conn.String())
+	}
+
+}
