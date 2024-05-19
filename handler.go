@@ -132,6 +132,9 @@ func flushall(args []Serializable) Serializable {
 	setMU.Lock()
 	setData = map[string]string{}
 	setMU.Unlock()
+	HsetMU.Lock()
+	HsetData = map[string]map[string]string{}
+	HsetMU.Unlock()
 	return Serializable{typ: "string", str: "OK"}
 }
 
