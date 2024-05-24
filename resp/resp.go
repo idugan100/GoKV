@@ -185,3 +185,15 @@ func (v Serializable) marshalError() []byte {
 func (v Serializable) marshalNull() []byte {
 	return []byte("_\r\n")
 }
+
+func (v Serializable) ValidateIncoming() (Serializable, bool) {
+	if v.Typ != "array" {
+		fmt.Println("Invalid request expected array")
+		return Serializable{Typ: "error", Str: "invalid input type expected array"}, false
+
+	} else if len(v.Array) <= 0 {
+		fmt.Println("Invalid request, no args")
+		return Serializable{Typ: "error", Str: "invalid input request no args"}, false
+	}
+	return Serializable{}, true
+}

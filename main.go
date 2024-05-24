@@ -43,18 +43,13 @@ func HandleConnection(conn io.ReadWriteCloser) {
 			if err == io.EOF {
 				return
 			}
-		}
-		if serializable.Typ != "array" {
-			fmt.Println("Invalid request expected array")
-			v := resp.Serializable{Typ: "error", Str: "invalid input type expected array"}
-			conn.Write(v.Marshal())
+			conn.Write(resp.Serializable{Typ: "error", Str: err.Error()}.Marshal())
 			continue
 		}
-		if len(serializable.Array) <= 0 {
-			fmt.Println("Invalid request, no args")
-			v := resp.Serializable{Typ: "error", Str: "invalid input request no args"}
-			conn.Write(v.Marshal())
-			continue
+
+		serializableErr, ok := serializable.ValidateIncoming()
+		if !ok {
+			conn.Write(serializableErr.Marshal())
 		}
 
 		handler, ok := handlers.Handlers[strings.ToUpper(serializable.Array[0].Bulk)]
