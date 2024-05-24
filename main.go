@@ -5,6 +5,8 @@ import (
 	"io"
 	"net"
 	"strings"
+
+	"github.com/idugan100/GoKV/resp"
 )
 
 func main() {
@@ -33,35 +35,37 @@ func handleConnection(conn io.ReadWriteCloser) {
 	defer conn.Close()
 
 	for {
-		r := NewResp(conn)
-		serializable, err := r.Read()
+		r := resp.NewResp(conn)
 
+		serializable, err := r.Read()
 		if err != nil {
 			if err == io.EOF {
 				return
 			}
 		}
-		if serializable.typ != "array" {
+		if serializable.Typ != "array" {
 			fmt.Println("Invalid request expected array")
-			v := Serializable{typ: "error", str: "invalid input type expected array"}
+			v := resp.Serializable{Typ: "error", Str: "invalid input type expected array"}
 			conn.Write(v.Marshal())
 			continue
 		}
-		if len(serializable.array) <= 0 {
+		if len(serializable.Array) <= 0 {
 			fmt.Println("Invalid request, no args")
-			v := Serializable{typ: "error", str: "invalid input request no args"}
+			v := resp.Serializable{Typ: "error", Str: "invalid input request no args"}
 			conn.Write(v.Marshal())
 			continue
 		}
 
-		handler, ok := Handlers[strings.ToUpper(serializable.array[0].bulk)]
+		handler, ok := Handlers[strings.ToUpper(serializable.Array[0].Bulk)]
+
 		if !ok {
-			notFoundVal := Serializable{typ: "error", str: "command not found"}
+			notFoundVal := resp.Serializable{Typ: "error", Str: "command not found"}
 			conn.Write(notFoundVal.Marshal())
 			continue
 		}
-		args := serializable.array[1:]
+		args := serializable.Array[1:]
 		rVal := handler(args)
+		// fmt.Println(rVal)
 		conn.Write(rVal.Marshal())
 	}
 }

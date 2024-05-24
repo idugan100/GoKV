@@ -3,57 +3,59 @@ package main
 import (
 	"fmt"
 	"math/rand"
+
+	"github.com/idugan100/GoKV/resp"
 )
 
-func set(args []Serializable) Serializable {
+func set(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return Serializable{typ: "error", str: "incorrect number of arg for SET command"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arg for SET command"}
 	}
-	key := args[0].bulk
-	val := args[1].bulk
+	key := args[0].Bulk
+	val := args[1].Bulk
 	setMU.Lock()
 	setData[key] = val
 	setMU.Unlock()
 
-	return Serializable{typ: "bulk", bulk: "OK"}
+	return resp.Serializable{Typ: "bulk", Bulk: "OK"}
 }
 
-func get(args []Serializable) Serializable {
+func get(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
-		return Serializable{typ: "error", str: "incorrect number of arg for GET command"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arg for GET command"}
 	}
 	var val string
 
 	setMU.RLock()
-	val, ok := setData[args[0].bulk]
+	val, ok := setData[args[0].Bulk]
 	setMU.RUnlock()
 	if !ok {
-		return Serializable{typ: "null"}
+		return resp.Serializable{Typ: "null"}
 	}
-	return Serializable{typ: "bulk", bulk: val}
+	return resp.Serializable{Typ: "bulk", Bulk: val}
 }
 
-func del(args []Serializable) Serializable {
+func del(args []resp.Serializable) resp.Serializable {
 	if len(args) < 1 {
-		return Serializable{typ: "error", str: "incorrect number of args for DEL command"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of args for DEL command"}
 	}
 	deletedCounter := 0
 	setMU.Lock()
 	for i := 0; i < len(args); i++ {
-		_, ok := setData[args[i].bulk]
+		_, ok := setData[args[i].Bulk]
 		if ok {
 			deletedCounter++
-			delete(setData, args[i].bulk)
+			delete(setData, args[i].Bulk)
 		}
 	}
 	setMU.Unlock()
 	fmt.Println("reached here deleted ", deletedCounter)
-	return Serializable{typ: "integer", num: deletedCounter}
+	return resp.Serializable{Typ: "integer", Num: deletedCounter}
 }
 
-func randkey(args []Serializable) Serializable {
+func randkey(args []resp.Serializable) resp.Serializable {
 	if len(setData) == 0 {
-		return Serializable{typ: "null"}
+		return resp.Serializable{Typ: "null"}
 	}
 
 	randNum := rand.Intn(len(setData))
@@ -68,50 +70,50 @@ func randkey(args []Serializable) Serializable {
 		counter++
 	}
 	setMU.RUnlock()
-	return Serializable{typ: "bulk", bulk: randKey}
+	return resp.Serializable{Typ: "bulk", Bulk: randKey}
 }
 
-func exists(args []Serializable) Serializable {
+func exists(args []resp.Serializable) resp.Serializable {
 	if len(args) < 1 {
-		return Serializable{typ: "error", str: "incorrect number of args for exisits command"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of args for exisits command"}
 	}
 	counter := 0
 	for _, a := range args {
 		setMU.RLock()
-		_, ok := setData[a.bulk]
+		_, ok := setData[a.Bulk]
 		setMU.RUnlock()
 		if ok {
 			counter++
 		}
 	}
-	return Serializable{typ: "integer", num: counter}
+	return resp.Serializable{Typ: "integer", Num: counter}
 }
 
-func strlen(args []Serializable) Serializable {
+func strlen(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
-		return Serializable{typ: "error", str: "incorrect number of args for strlen command"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of args for Strlen command"}
 	}
 	setMU.RLock()
-	val := setData[args[0].bulk]
+	val := setData[args[0].Bulk]
 	setMU.RUnlock()
 
-	return Serializable{typ: "integer", num: len(val)}
+	return resp.Serializable{Typ: "integer", Num: len(val)}
 
 }
 
-func getset(args []Serializable) Serializable {
+func getset(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return Serializable{typ: "error", str: "incorrect number of arguements for GETSET command"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements for GETSET command"}
 	}
 	setMU.Lock()
-	oldSerializable, ok := setData[args[0].bulk]
-	setData[args[0].bulk] = args[1].bulk
+	oldSerializable, ok := setData[args[0].Bulk]
+	setData[args[0].Bulk] = args[1].Bulk
 	setMU.Unlock()
 
 	if !ok {
-		return Serializable{typ: "null"}
+		return resp.Serializable{Typ: "null"}
 	}
 
-	return Serializable{typ: "bulk", bulk: oldSerializable}
+	return resp.Serializable{Typ: "bulk", Bulk: oldSerializable}
 
 }

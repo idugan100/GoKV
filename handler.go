@@ -2,13 +2,15 @@ package main
 
 import (
 	"sync"
+
+	"github.com/idugan100/GoKV/resp"
 )
 
 var setData = map[string]string{}
 var setMU = sync.RWMutex{}
 var HsetData = map[string]map[string]string{}
 var HsetMU = sync.RWMutex{}
-var Handlers = map[string]func([]Serializable) Serializable{
+var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"PING":      ping,
 	"SET":       set,
 	"GET":       get,
