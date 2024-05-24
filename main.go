@@ -65,7 +65,6 @@ func handleConnection(conn io.ReadWriteCloser) {
 		}
 		args := serializable.Array[1:]
 		rVal := handler(args)
-		// fmt.Println(rVal)
 		conn.Write(rVal.Marshal())
 	}
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 
 	"github.com/idugan100/GoKV/resp"
@@ -49,7 +48,6 @@ func del(args []resp.Serializable) resp.Serializable {
 		}
 	}
 	setMU.Unlock()
-	fmt.Println("reached here deleted ", deletedCounter)
 	return resp.Serializable{Typ: "integer", Num: deletedCounter}
 }
 
