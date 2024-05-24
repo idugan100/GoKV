@@ -25,7 +25,7 @@ func (c ConnectionMock) Close() error {
 	return nil
 }
 
-func getConnectionMock(inputString string) ConnectionMock {
+func GetConnectionMock(inputString string) ConnectionMock {
 	inputStringReader := strings.NewReader(inputString)
 	var b bytes.Buffer
 
@@ -64,9 +64,9 @@ func TestStartServer(t *testing.T) {
 }
 
 func TestHandleInvalidCommand(t *testing.T) {
-	conn := getConnectionMock("*1\r\n$3\r\n123\r\n")
+	conn := GetConnectionMock("*1\r\n$3\r\n123\r\n")
 
-	handleConnection(conn)
+	HandleConnection(conn)
 
 	if !strings.Contains(conn.String(), "command not found") {
 		t.Errorf("expected response of command not found got response of %s", conn.String())

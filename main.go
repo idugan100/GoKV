@@ -6,6 +6,7 @@ import (
 	"net"
 	"strings"
 
+	"github.com/idugan100/GoKV/handlers"
 	"github.com/idugan100/GoKV/resp"
 )
 
@@ -27,11 +28,11 @@ func startServer() {
 			return
 		}
 
-		go handleConnection(conn)
+		go HandleConnection(conn)
 	}
 }
 
-func handleConnection(conn io.ReadWriteCloser) {
+func HandleConnection(conn io.ReadWriteCloser) {
 	defer conn.Close()
 
 	for {
@@ -56,7 +57,7 @@ func handleConnection(conn io.ReadWriteCloser) {
 			continue
 		}
 
-		handler, ok := Handlers[strings.ToUpper(serializable.Array[0].Bulk)]
+		handler, ok := handlers.Handlers[strings.ToUpper(serializable.Array[0].Bulk)]
 
 		if !ok {
 			notFoundVal := resp.Serializable{Typ: "error", Str: "command not found"}

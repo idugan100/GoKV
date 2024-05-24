@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import "github.com/idugan100/GoKV/resp"
 
