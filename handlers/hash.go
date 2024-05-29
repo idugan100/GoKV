@@ -73,3 +73,19 @@ func hstrlen(args []resp.Serializable) resp.Serializable {
 	}
 	return resp.Serializable{Typ: "integer", Num: len(val)}
 }
+
+func hlen(args []resp.Serializable) resp.Serializable {
+	if len(args) != 1 {
+		return resp.Serializable{Typ: "error", Str: "incorrect number of args"}
+	}
+
+	HsetMU.RLock()
+	val, ok := HsetData[args[0].Bulk]
+	HsetMU.RUnlock()
+
+	if !ok {
+		return resp.Serializable{Typ: "integer", Num: 0}
+	}
+	return resp.Serializable{Typ: "integer", Num: len(val)}
+
+}

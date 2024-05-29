@@ -25,4 +25,5 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"HGET":      hget,
 	"HEXISTS":   hexists,
 	"HSTRLEN":   hstrlen,
+	"HLEN":      hlen,
 }

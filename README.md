@@ -18,6 +18,8 @@ This is a simple in-memory key-value store written in Go. All it's commands are 
 - [HGET](https://redis.io/docs/latest/commands/hget/)
 - [HEXISTS](https://redis.io/docs/latest/commands/hexists/)
 - [HSTRLEN](https://redis.io/docs/latest/commands/hstrlen/)
+- [HLEN](https://redis.io/docs/latest/commands/hlen/)
+
 
 # Benchmark
 ```

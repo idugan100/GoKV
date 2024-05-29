@@ -212,3 +212,34 @@ func TestStrLenCommand(t *testing.T) {
 	}
 
 }
+
+func TestHlenIncorrectArgs(t *testing.T) {
+	conn := GetConnectionMock("*1\r\n$4\r\nHLEN\r\n")
+	HandleConnection(conn)
+
+	if !strings.Contains(conn.String(), "incorrect number of args") {
+		t.Errorf("expected to get incorrect number of args error, found: %s", conn.String())
+	}
+}
+
+func TestHlenHashNotFound(t *testing.T) {
+	conn := GetConnectionMock("*2\r\n$4\r\nHLEN\r\n$6\r\nmissing\r\n")
+	HandleConnection(conn)
+
+	if !strings.Contains(conn.String(), ":0") {
+		t.Errorf("expected :0, found: %s", conn.String())
+	}
+}
+
+func TestHlen(t *testing.T) {
+	conn := GetConnectionMock("*8\r\n$4\r\nhset\r\n$4\r\ndata\r\n$4\r\nname\r\n$5\r\nisaac\r\n$3\r\nage\r\n$2\r\n20\r\n$3\r\njob\r\n$3\r\nswe\r\n")
+
+	HandleConnection(conn)
+
+	conn2 := GetConnectionMock("*2\r\n$4\r\nHLEN\r\n$4\r\ndata\r\n")
+	HandleConnection(conn2)
+
+	if !strings.Contains(conn.String(), ":3") {
+		t.Errorf("expected :3, found: %s", conn.String())
+	}
+}
