@@ -318,3 +318,49 @@ func TestHGetAll(t *testing.T) {
 	}
 
 }
+
+func TestHSetNXIncorrectArgs(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*2\r\n$6\r\nHSETNX\r\n$3\r\nkey\r\n")
+	HandleConnection(conn)
+
+	expectedResult := "incorrect number of args"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected to get '%s' error, found: %s", expectedResult, conn.String())
+	}
+}
+
+func TestHSetNXAlreadyExisits(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*8\r\n$4\r\nhset\r\n$6\r\nmyinfo\r\n$4\r\nname\r\n$5\r\nisaac\r\n$3\r\nage\r\n$2\r\n20\r\n$3\r\njob\r\n$3\r\nswe\r\n")
+	HandleConnection(conn)
+
+	conn2 := GetConnectionMock("*4\r\n$6\r\nHSETNX\r\n$6\r\nmyinfo\r\n$4\r\nname\r\n$3\r\nbob\r\n")
+	HandleConnection(conn2)
+
+	expectedResult := ":0"
+
+	if !strings.Contains(conn2.String(), expectedResult) {
+		t.Errorf("expected '%s', got '%s'", expectedResult, conn2.String())
+	}
+
+}
+
+func TestHSetNX(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*8\r\n$4\r\nhset\r\n$6\r\nmyinfo\r\n$4\r\nname\r\n$5\r\nisaac\r\n$3\r\nage\r\n$2\r\n20\r\n$3\r\njob\r\n$3\r\nswe\r\n")
+	HandleConnection(conn)
+
+	conn2 := GetConnectionMock("*4\r\n$6\r\nHSETNX\r\n$6\r\nmyinfo\r\n$4\r\nfavcolor\r\n$3\r\nblue\r\n")
+	HandleConnection(conn2)
+
+	expectedResult := ":1"
+
+	if !strings.Contains(conn2.String(), expectedResult) {
+		t.Errorf("expected '%s', got '%s'", expectedResult, conn2.String())
+	}
+
+}

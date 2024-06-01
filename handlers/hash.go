@@ -107,3 +107,22 @@ func hgetall(args []resp.Serializable) resp.Serializable {
 	return resp.Serializable{Typ: "array", Array: results}
 
 }
+
+func hsetnx(args []resp.Serializable) resp.Serializable {
+	if len(args) != 3 {
+		return resp.Serializable{Typ: "error", Str: "incorrect number of args"}
+	}
+	HsetMU.RLock()
+	_, ok := HsetData[args[0].Bulk][args[1].Bulk]
+	HsetMU.RUnlock()
+
+	if ok {
+		return resp.Serializable{Typ: "integer", Num: 0}
+	}
+
+	HsetMU.Lock()
+	HsetData[args[0].Bulk][args[1].Bulk] = args[2].Bulk
+	HsetMU.Unlock()
+
+	return resp.Serializable{Typ: "integer", Num: 1}
+}

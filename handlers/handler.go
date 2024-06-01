@@ -27,6 +27,7 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"HSTRLEN":   hstrlen,
 	"HLEN":      hlen,
 	"HGETALL":   hgetall,
+	"HSETNX":    hsetnx,
 }
 
 func ClearData() {

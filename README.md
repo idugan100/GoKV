@@ -20,6 +20,7 @@ This is a simple in-memory key-value store written in Go. All it's commands are 
 - [HSTRLEN](https://redis.io/docs/latest/commands/hstrlen/)
 - [HLEN](https://redis.io/docs/latest/commands/hlen/)
 - [HGETALL](https://redis.io/docs/latest/commands/hgetall/)
+- [HSETNX](https://redis.io/docs/latest/commands/hsetnx/)
 
 
 # Benchmark
