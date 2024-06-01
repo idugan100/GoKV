@@ -271,3 +271,50 @@ func TestHlen(t *testing.T) {
 		t.Errorf("expected :3, found: %s", conn.String())
 	}
 }
+
+func TestHGetAllIncorrectArgs(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*1\r\n$7\r\nhgetall\r\n")
+
+	HandleConnection(conn)
+
+	expectedResult := "incorrect number of args"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected '%s', got '%s'", expectedResult, conn.String())
+	}
+}
+
+func TestHGetAllKeyNotFound(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*2\r\n$7\r\nhgetall\r\n$7\r\nmissing\r\n")
+
+	HandleConnection(conn)
+
+	expectedResult := "*0"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected '%s', got '%s'", expectedResult, conn.String())
+	}
+}
+
+func TestHGetAll(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*8\r\n$4\r\nhset\r\n$4\r\ndata\r\n$4\r\nname\r\n$5\r\nisaac\r\n$3\r\nage\r\n$2\r\n20\r\n$3\r\njob\r\n$3\r\nswe\r\n")
+
+	HandleConnection(conn)
+
+	conn2 := GetConnectionMock("*2\r\n$7\r\nhgetall\r\n$4\r\ndata\r\n")
+
+	HandleConnection(conn2)
+
+	expectedResults := [...]string{"isaac", "20", "swe"}
+
+	for _, expectedResult := range expectedResults {
+		if !strings.Contains(conn2.String(), expectedResult) {
+			t.Errorf("expected '%s', got '%s'", expectedResult, conn2.String())
+		}
+	}
+
+}

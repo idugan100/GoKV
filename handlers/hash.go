@@ -89,3 +89,21 @@ func hlen(args []resp.Serializable) resp.Serializable {
 	return resp.Serializable{Typ: "integer", Num: len(val)}
 
 }
+
+func hgetall(args []resp.Serializable) resp.Serializable {
+	if len(args) != 1 {
+		return resp.Serializable{Typ: "error", Str: "incorrect number of args"}
+	}
+	HsetMU.RLock()
+	val, ok := HsetData[args[0].Bulk]
+	HsetMU.RUnlock()
+	if !ok {
+		return resp.Serializable{Typ: "array"}
+	}
+	var results []resp.Serializable
+	for key := range val {
+		results = append(results, resp.Serializable{Typ: "bulk", Bulk: val[key]})
+	}
+	return resp.Serializable{Typ: "array", Array: results}
+
+}
