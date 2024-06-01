@@ -3,9 +3,13 @@ package main
 import (
 	"strings"
 	"testing"
+
+	"github.com/idugan100/GoKV/handlers"
 )
 
 func TestHandlePingCommand(t *testing.T) {
+	defer handlers.ClearData()
+
 	conn := GetConnectionMock("*1\r\n$4\r\nPING\r\n")
 
 	HandleConnection(conn)
@@ -16,6 +20,7 @@ func TestHandlePingCommand(t *testing.T) {
 }
 
 func TestHandleLolWutCommand(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*1\r\n$6\r\nLOLWUT\r\n")
 
 	HandleConnection(conn)
@@ -26,6 +31,7 @@ func TestHandleLolWutCommand(t *testing.T) {
 }
 
 func TestHandleHSetandHGet(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*8\r\n$4\r\nhset\r\n$6\r\nmyinfo\r\n$4\r\nname\r\n$5\r\nisaac\r\n$3\r\nage\r\n$2\r\n20\r\n$3\r\njob\r\n$3\r\nswe\r\n")
 
 	HandleConnection(conn)
@@ -44,6 +50,7 @@ func TestHandleHSetandHGet(t *testing.T) {
 }
 
 func TestHandleHsetIncorrectNumberArgs(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*3\r\n$4\r\nhset\r\n$6\r\nmyinfo\r\n$4\r\nname\r\n")
 
 	HandleConnection(conn)
@@ -54,6 +61,7 @@ func TestHandleHsetIncorrectNumberArgs(t *testing.T) {
 }
 
 func TestHandleHgetIncorrectNumberArgs(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*2\r\n$4\r\nhget\r\n$6\r\nmyinfo\r\n")
 
 	HandleConnection(conn)
@@ -64,6 +72,7 @@ func TestHandleHgetIncorrectNumberArgs(t *testing.T) {
 }
 
 func TestHandleHexists(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*8\r\n$4\r\nhset\r\n$6\r\nmyinfo\r\n$4\r\nname\r\n$5\r\nisaac\r\n$3\r\nage\r\n$2\r\n20\r\n$3\r\njob\r\n$3\r\nswe\r\n")
 
 	HandleConnection(conn)
@@ -77,6 +86,7 @@ func TestHandleHexists(t *testing.T) {
 }
 
 func TestHandleHexistsMissingArgs(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*2\r\n$7\r\nhexists\r\n$6\r\nmyinfo\r\n")
 	HandleConnection(conn)
 
@@ -86,6 +96,7 @@ func TestHandleHexistsMissingArgs(t *testing.T) {
 }
 
 func TestHandleHexistsNotFound(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*3\r\n$7\r\nhexists\r\n$6\r\nkey\r\n$5\r\nvalue\r\n")
 	HandleConnection(conn)
 
@@ -95,6 +106,7 @@ func TestHandleHexistsNotFound(t *testing.T) {
 }
 
 func TestHandleDel(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*3\r\n$3\r\nSET\r\n$10\r\ndeletedkey\r\n$13\r\ndeletedvalue\r\n")
 	HandleConnection(conn)
 
@@ -108,6 +120,7 @@ func TestHandleDel(t *testing.T) {
 }
 
 func TestHandleHstrlen(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*4\r\n$4\r\nhset\r\n$6\r\nlength\r\n$3\r\nkey\r\n$3\r\nval\r\n")
 	HandleConnection(conn)
 
@@ -121,6 +134,7 @@ func TestHandleHstrlen(t *testing.T) {
 }
 
 func TestHandleHstrlenInvalidArgs(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*2\r\n$7\r\nhstrlen\r\n$6\r\nlength\r\n")
 	HandleConnection(conn)
 
@@ -131,6 +145,7 @@ func TestHandleHstrlenInvalidArgs(t *testing.T) {
 }
 
 func TestHandleGetSetCommands(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n")
 
 	HandleConnection(conn)
@@ -149,6 +164,7 @@ func TestHandleGetSetCommands(t *testing.T) {
 }
 
 func TestHandleInvalidSetCommand(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*1\r\n$3\r\nset\r\n")
 
 	HandleConnection(conn)
@@ -159,6 +175,7 @@ func TestHandleInvalidSetCommand(t *testing.T) {
 }
 
 func TestHandleInvalidGetCommand(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*1\r\n$3\r\nget\r\n")
 
 	HandleConnection(conn)
@@ -169,6 +186,7 @@ func TestHandleInvalidGetCommand(t *testing.T) {
 }
 
 func TestHandleGetCommandOnMissingKey(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*2\r\n$3\r\nget\r\n$3\r\nmissing\r\n")
 
 	HandleConnection(conn)
@@ -178,6 +196,7 @@ func TestHandleGetCommandOnMissingKey(t *testing.T) {
 	}
 }
 func TestExistsCommandOnMissingKey(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*2\r\n$6\r\nEXISTS\r\n$7\r\nmissing\r\n")
 
 	HandleConnection(conn)
@@ -188,6 +207,7 @@ func TestExistsCommandOnMissingKey(t *testing.T) {
 }
 
 func TestExisitsCommandOnExistingKey(t *testing.T) {
+	defer handlers.ClearData()
 	conn := GetConnectionMock("*3\r\n$3\r\nset\r\n$6\r\nthekey\r\n$5\r\nfound\r\n")
 	HandleConnection(conn)
 
@@ -201,6 +221,8 @@ func TestExisitsCommandOnExistingKey(t *testing.T) {
 }
 
 func TestStrLenCommand(t *testing.T) {
+	defer handlers.ClearData()
+
 	conn := GetConnectionMock("*3\r\n$3\r\nset\r\n$6\r\nlength\r\n$4\r\nfour\r\n")
 	HandleConnection(conn)
 
@@ -214,6 +236,8 @@ func TestStrLenCommand(t *testing.T) {
 }
 
 func TestHlenIncorrectArgs(t *testing.T) {
+	defer handlers.ClearData()
+
 	conn := GetConnectionMock("*1\r\n$4\r\nHLEN\r\n")
 	HandleConnection(conn)
 
@@ -223,6 +247,8 @@ func TestHlenIncorrectArgs(t *testing.T) {
 }
 
 func TestHlenHashNotFound(t *testing.T) {
+	defer handlers.ClearData()
+
 	conn := GetConnectionMock("*2\r\n$4\r\nHLEN\r\n$6\r\nmissing\r\n")
 	HandleConnection(conn)
 
@@ -232,6 +258,8 @@ func TestHlenHashNotFound(t *testing.T) {
 }
 
 func TestHlen(t *testing.T) {
+	defer handlers.ClearData()
+
 	conn := GetConnectionMock("*8\r\n$4\r\nhset\r\n$4\r\ndata\r\n$4\r\nname\r\n$5\r\nisaac\r\n$3\r\nage\r\n$2\r\n20\r\n$3\r\njob\r\n$3\r\nswe\r\n")
 
 	HandleConnection(conn)

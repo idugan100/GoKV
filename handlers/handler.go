@@ -26,4 +26,10 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"HEXISTS":   hexists,
 	"HSTRLEN":   hstrlen,
 	"HLEN":      hlen,
+	"HGETALL":   hgetall,
+}
+
+func ClearData() {
+	setData = map[string]string{}
+	HsetData = map[string]map[string]string{}
 }
