@@ -126,3 +126,21 @@ func hsetnx(args []resp.Serializable) resp.Serializable {
 
 	return resp.Serializable{Typ: "integer", Num: 1}
 }
+
+func hdel(args []resp.Serializable) resp.Serializable {
+	if len(args) < 2 {
+		return resp.Serializable{Typ: "error", Str: "incorrect number of args"}
+	}
+	numFields := len(args) - 1
+	numDeleted := 0
+	for i := range numFields {
+		if _, ok := HsetData[args[0].Bulk][args[i+1].Bulk]; ok {
+			HsetMU.Lock()
+			delete(HsetData[args[0].Bulk], args[i+1].Bulk)
+			HsetMU.Unlock()
+			numDeleted++
+		}
+	}
+	return resp.Serializable{Typ: "integer", Num: numDeleted}
+
+}

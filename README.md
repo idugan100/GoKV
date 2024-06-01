@@ -21,6 +21,7 @@ This is a simple in-memory key-value store written in Go. All it's commands are 
 - [HLEN](https://redis.io/docs/latest/commands/hlen/)
 - [HGETALL](https://redis.io/docs/latest/commands/hgetall/)
 - [HSETNX](https://redis.io/docs/latest/commands/hsetnx/)
+- [HDEL](https://redis.io/docs/latest/commands/hdel/)
 
 
 # Benchmark
