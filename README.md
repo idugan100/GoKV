@@ -14,6 +14,7 @@ This is a simple in-memory key-value store written in Go. All it's commands are 
 - [LOLWUT](https://redis.io/docs/latest/commands/lolwut/)
 - [FLUSHALL](https://redis.io/docs/latest/commands/flushall/)
 - [GETSET](https://redis.io/docs/latest/commands/getset/)
+- [SETNX] (https://redis.io/docs/latest/commands/setnx/)
 - [HSET](https://redis.io/docs/latest/commands/hset/)
 - [HGET](https://redis.io/docs/latest/commands/hget/)
 - [HEXISTS](https://redis.io/docs/latest/commands/hexists/)

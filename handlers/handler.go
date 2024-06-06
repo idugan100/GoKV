@@ -18,6 +18,7 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"RANDOMKEY": randkey,
 	"EXISTS":    exists,
 	"STRLEN":    strlen,
+	"SETNX":     setnx,
 	"LOLWUT":    lolwut,
 	"FLUSHALL":  flushall,
 	"GETSET":    getset,

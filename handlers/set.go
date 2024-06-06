@@ -115,3 +115,22 @@ func getset(args []resp.Serializable) resp.Serializable {
 	return resp.Serializable{Typ: "bulk", Bulk: oldSerializable}
 
 }
+
+func setnx(args []resp.Serializable) resp.Serializable {
+	if len(args) != 2 {
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements for SETNX command"}
+	}
+	setMU.RLock()
+	_, ok := setData[args[0].Bulk]
+	setMU.RUnlock()
+
+	if ok {
+		return resp.Serializable{Typ: "integer", Num: 0}
+	}
+
+	setMU.Lock()
+	setData[args[0].Bulk] = args[1].Bulk
+	setMU.Unlock()
+	return resp.Serializable{Typ: "integer", Num: 1}
+
+}

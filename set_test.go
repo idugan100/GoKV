@@ -112,3 +112,43 @@ func TestStrLenCommand(t *testing.T) {
 	}
 
 }
+
+func TestSetNXInvalidNumberOfArgs(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*2\r\n$5\r\nsetnx\r\n$3\r\nkey\r\n")
+	HandleConnection(conn)
+
+	expectedResult := "incorrect number of arguements"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected to find %s, found: %s", expectedResult, conn.String())
+	}
+
+}
+
+func TestSetNXValueExisits(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*3\r\n$3\r\nset\r\n$3\r\nkey\r\n$3\r\nval\r\n")
+	HandleConnection(conn)
+
+	conn1 := GetConnectionMock("*3\r\n$5\r\nsetnx\r\n$3\r\nkey\r\n$6\r\nnewval\r\n")
+	HandleConnection(conn1)
+
+	expectedResult := ":0"
+	if !strings.Contains(conn1.String(), expectedResult) {
+		t.Errorf("expected to find %s, found: %s", expectedResult, conn1.String())
+	}
+}
+
+func TestSetNXValueNotSet(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*3\r\n$5\r\nsetnx\r\n$3\r\nkey\r\n$6\r\nnewval\r\n")
+	HandleConnection(conn)
+
+	expectedResult := ":1"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected to find %s, found: %s", expectedResult, conn.String())
+	}
+}
