@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"math/rand"
+	"strconv"
 
 	"github.com/idugan100/GoKV/resp"
 )
@@ -133,4 +134,31 @@ func setnx(args []resp.Serializable) resp.Serializable {
 	setMU.Unlock()
 	return resp.Serializable{Typ: "integer", Num: 1}
 
+}
+
+func incr(args []resp.Serializable) resp.Serializable {
+	if len(args) != 1 {
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements for INCR command"}
+	}
+	setMU.RLock()
+	val, ok := setData[args[0].Bulk]
+	setMU.RUnlock()
+
+	if !ok {
+		setMU.Lock()
+		setData[args[0].Bulk] = "0"
+		setMU.Unlock()
+		return resp.Serializable{Typ: "integer", Num: 0}
+	}
+
+	num, err := strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: "incorrect data type for INCR operation"}
+	}
+	num++
+	setMU.Lock()
+	setData[args[0].Bulk] = strconv.Itoa(int(num))
+	setMU.Unlock()
+
+	return resp.Serializable{Typ: "integer", Num: int(num)}
 }
