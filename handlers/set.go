@@ -147,7 +147,7 @@ func incr(args []resp.Serializable) resp.Serializable {
 
 	if !ok {
 		setData[args[0].Bulk] = "0"
-		return resp.Serializable{Typ: "integer", Num: 0}
+		val = "0"
 	}
 
 	num, err := strconv.ParseInt(val, 10, 64)
@@ -155,6 +155,29 @@ func incr(args []resp.Serializable) resp.Serializable {
 		return resp.Serializable{Typ: "error", Str: "incorrect data type for INCR operation"}
 	}
 	num++
+	setData[args[0].Bulk] = strconv.Itoa(int(num))
+
+	return resp.Serializable{Typ: "integer", Num: int(num)}
+}
+func decr(args []resp.Serializable) resp.Serializable {
+	if len(args) != 1 {
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements for DECR command"}
+	}
+	setMU.Lock()
+	defer setMU.Unlock()
+
+	val, ok := setData[args[0].Bulk]
+
+	if !ok {
+		setData[args[0].Bulk] = "0"
+		val = "0"
+	}
+
+	num, err := strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: "incorrect data type for DECR operation"}
+	}
+	num--
 	setData[args[0].Bulk] = strconv.Itoa(int(num))
 
 	return resp.Serializable{Typ: "integer", Num: int(num)}

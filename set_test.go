@@ -188,7 +188,7 @@ func TestIncrOnNewKey(t *testing.T) {
 	conn := GetConnectionMock("*2\r\n$4\r\nINCR\r\n$3\r\nnum\r\n")
 	HandleConnection(conn)
 
-	expectedResult := ":0"
+	expectedResult := ":1"
 
 	if !strings.Contains(conn.String(), expectedResult) {
 		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
@@ -208,5 +208,63 @@ func TestIncrOnInvalidDataType(t *testing.T) {
 
 	if !strings.Contains(conn2.String(), expectedResult) {
 		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn2.String())
+	}
+}
+
+func TestDecrOnExistingKey(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*3\r\n$3\r\nset\r\n$3\r\nnum\r\n$1\r\n1\r\n")
+	HandleConnection(conn)
+
+	conn2 := GetConnectionMock("*2\r\n$4\r\nDECR\r\n$3\r\nnum\r\n")
+	HandleConnection(conn2)
+
+	expectedResult := ":0"
+
+	if !strings.Contains(conn2.String(), expectedResult) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn2.String())
+	}
+}
+
+func TestDecrOnNewKey(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*2\r\n$4\r\nDECR\r\n$3\r\nnum\r\n")
+	HandleConnection(conn)
+
+	expectedResult := ":-1"
+
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
+	}
+}
+
+func TestDecrOnInvalidDataType(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*3\r\n$3\r\nset\r\n$3\r\nnum\r\n$3\r\none\r\n")
+	HandleConnection(conn)
+
+	conn2 := GetConnectionMock("*2\r\n$4\r\nDECR\r\n$3\r\nnum\r\n")
+	HandleConnection(conn2)
+
+	expectedResult := "incorrect data type"
+
+	if !strings.Contains(conn2.String(), expectedResult) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn2.String())
+	}
+}
+
+func TestDecrInvalidNumberOfArgs(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*1\r\n$4\r\nDECR\r\b")
+	HandleConnection(conn)
+
+	expectedResult := "incorrect number of arguements"
+
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
 	}
 }

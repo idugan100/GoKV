@@ -20,6 +20,7 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"STRLEN":    strlen,
 	"SETNX":     setnx,
 	"INCR":      incr,
+	"DECR":      decr,
 	"LOLWUT":    lolwut,
 	"FLUSHALL":  flushall,
 	"GETSET":    getset,
