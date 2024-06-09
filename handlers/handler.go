@@ -8,8 +8,8 @@ import (
 
 var setData = map[string]string{}
 var setMU = sync.RWMutex{}
-var HsetData = map[string]map[string]string{}
-var HsetMU = sync.RWMutex{}
+var hsetData = map[string]map[string]string{}
+var hsetMU = sync.RWMutex{}
 var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"PING":      ping,
 	"SET":       set,
@@ -36,5 +36,5 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 
 func ClearData() {
 	setData = map[string]string{}
-	HsetData = map[string]map[string]string{}
+	hsetData = map[string]map[string]string{}
 }
