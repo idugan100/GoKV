@@ -15,8 +15,9 @@ func TestHandleDel(t *testing.T) {
 	conn2 := GetConnectionMock("*2\r\n$3\r\nDEL\r\n$10\r\ndeletedkey\r\n")
 	HandleConnection(conn2)
 
-	if !strings.Contains(conn2.String(), ":1") {
-		t.Errorf("expected response of :1, recieved %s", conn.String())
+	expectedResult := ":1"
+	if !strings.Contains(conn2.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn2.String())
 	}
 
 }
@@ -27,16 +28,17 @@ func TestHandleGetSetCommands(t *testing.T) {
 
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "OK") {
-		t.Errorf("expected response of ok got response of %s", conn.String())
+	expectedResult := "OK"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 
 	conn1 := GetConnectionMock("*2\r\n$3\r\nget\r\n$5\r\nhello\r\n")
 
 	HandleConnection(conn1)
-
-	if !strings.Contains(conn1.Buffer.String(), "world") {
-		t.Errorf("expected response of world got response of %s", conn1.Buffer.String())
+	expectedResult = "world"
+	if !strings.Contains(conn1.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn1.String())
 	}
 }
 
@@ -46,8 +48,9 @@ func TestHandleInvalidSetCommand(t *testing.T) {
 
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "incorrect") {
-		t.Errorf("expected response of incorrect number of args got response of %s", conn.String())
+	expectedResult := "incorrect number"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -57,8 +60,9 @@ func TestHandleInvalidGetCommand(t *testing.T) {
 
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "incorrect") {
-		t.Errorf("expected response of incorrect number of args got response of %s", conn.String())
+	expectedResult := "incorrect number"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -68,8 +72,9 @@ func TestHandleGetCommandOnMissingKey(t *testing.T) {
 
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "_\r\n") {
-		t.Errorf("expected response of incorrect number of args got response of %s", conn.String())
+	expectedResult := "_\r\n"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -79,8 +84,9 @@ func TestExistsCommandOnMissingKey(t *testing.T) {
 
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), ":0") {
-		t.Errorf("expected response of command not found got response of %s", conn.String())
+	expectedResult := ":0"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -92,10 +98,10 @@ func TestExisitsCommandOnExistingKey(t *testing.T) {
 	conn1 := GetConnectionMock("*2\r\n$6\r\nexists\r\n$6\r\nthekey\r\n")
 	HandleConnection(conn1)
 
-	if !strings.Contains(conn1.String(), ":1") {
-		t.Errorf("expected to find one, found %s", conn1.String())
+	expectedResult := ":1"
+	if !strings.Contains(conn1.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn1.String())
 	}
-
 }
 
 func TestStrLenCommand(t *testing.T) {
@@ -107,10 +113,10 @@ func TestStrLenCommand(t *testing.T) {
 	conn1 := GetConnectionMock("*2\r\n$6\r\nstrlen\r\n$6\r\nlength\r\n")
 	HandleConnection(conn1)
 
-	if !strings.Contains(conn1.String(), ":4") {
-		t.Errorf("expected to find 4, found: %s", conn1.String())
+	expectedResult := ":4"
+	if !strings.Contains(conn1.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn1.String())
 	}
-
 }
 
 func TestSetNXInvalidNumberOfArgs(t *testing.T) {
