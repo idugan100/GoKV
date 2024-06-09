@@ -2,7 +2,7 @@
 ![Tests/Linting/Formatting/Security](https://github.com/idugan100/GoKV/actions/workflows/main.yml/badge.svg)
 
 
-This is a simple in-memory key-value store written in Go. All it's commands are redis compatible (can be used via Redis CLI or any redis library), but the full redis 7.0 spec has not been implemented. This is not production ready. It was built as a learning exercise to better understand redis internals. I used a number of resources to learn how redis works in order to built GoKV that can be found [here](./Resources.MD).
+This is a simple in-memory key-value store written in Go. All the commands are redis compatible (can be used via Redis CLI or any redis library), but the full redis 7.0 spec has not been implemented. This is not production ready. It was built as a learning exercise to better understand redis internals. I used a number of resources to learn how redis works in order to built GoKV that can be found [here](./Resources.MD).
 
 # Suported Commands
 - [PING](https://redis.io/docs/latest/commands/ping/)
