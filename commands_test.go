@@ -14,8 +14,9 @@ func TestHandlePingCommand(t *testing.T) {
 
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "PONG") {
-		t.Errorf("expected response of PONG got response of %s", conn.String())
+	expectedResult := "PONG"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result of '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -25,8 +26,9 @@ func TestHandleLolWutCommand(t *testing.T) {
 
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), ":):):)") {
-		t.Errorf("expected response of GoKV 0.1 :):):) got response of %s", conn.String())
+	expectedResult := "GoKV 0.1 :):):)"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result of '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -37,16 +39,21 @@ func TestHandleHSetandHGet(t *testing.T) {
 
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "3") {
-		t.Errorf("expected response of 3 got response of %s", conn.String())
+	expectedResult := ":3"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 
 	conn1 := GetConnectionMock("*6\r\n$4\r\nhget\r\n$6\r\nmyinfo\r\n$4\r\nname\r\n$3\r\nage\r\n$3\r\njob\r\n$3\r\nlol\r\n")
 
 	HandleConnection(conn1)
 
-	if !strings.Contains(conn1.Buffer.String(), "isaac") || !strings.Contains(conn1.Buffer.String(), "20") || !strings.Contains(conn1.Buffer.String(), "swe") || !strings.Contains(conn1.Buffer.String(), "_") {
-		t.Errorf("expected response of 1) \"isaac\" 2) \"20\" 3) \"swe\" 4) (nil) got response of %s", conn1.Buffer.String())
+	expectedName := "isaac"
+	expectedAge := "20"
+	expectedJob := "swe"
+
+	if !strings.Contains(conn1.Buffer.String(), expectedName) || !strings.Contains(conn1.Buffer.String(), expectedAge) || !strings.Contains(conn1.Buffer.String(), expectedJob) || !strings.Contains(conn1.Buffer.String(), "_") {
+		t.Errorf("expected response of 1) '%s' 2) '%s' 3) '%s' 4) (nil) got response of %s", expectedName, expectedAge, expectedJob, conn1.Buffer.String())
 	}
 }
 
@@ -56,8 +63,9 @@ func TestHandleHsetIncorrectNumberArgs(t *testing.T) {
 
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "incorrect number") {
-		t.Errorf("expected error about incorrect number of arguements got response of %s", conn.String())
+	expectedResult := "incorrect number"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -67,8 +75,9 @@ func TestHandleHgetIncorrectNumberArgs(t *testing.T) {
 
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "incorrect number") {
-		t.Errorf("expected error about incorrect number of arguements got response of %s", conn.String())
+	expectedResult := "incorrect number"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -82,8 +91,9 @@ func TestHandleHexists(t *testing.T) {
 	conn1 := GetConnectionMock("*3\r\n$7\r\nhexists\r\n$6\r\nmyinfo\r\n$3\r\nage\r\n")
 	HandleConnection(conn1)
 
-	if !strings.Contains(conn1.String(), ":1") {
-		t.Errorf("expected result of 1, got %s", conn1.String())
+	expectedResult := ":1"
+	if !strings.Contains(conn1.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn1.String())
 	}
 }
 
@@ -92,8 +102,9 @@ func TestHandleHexistsMissingArgs(t *testing.T) {
 	conn := GetConnectionMock("*2\r\n$7\r\nhexists\r\n$6\r\nmyinfo\r\n")
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "incorrect number") {
-		t.Errorf("expected result of incorrect number of args error, got %s", conn.String())
+	expectedResult := "incorrect number"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -102,8 +113,9 @@ func TestHandleHexistsNotFound(t *testing.T) {
 	conn := GetConnectionMock("*3\r\n$7\r\nhexists\r\n$6\r\nkey\r\n$5\r\nvalue\r\n")
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), ":0") {
-		t.Errorf("expected result of 0, got %s", conn.String())
+	expectedResult := ":0"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s', got '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -116,8 +128,9 @@ func TestHandleHstrlen(t *testing.T) {
 	conn2 := GetConnectionMock("*3\r\n$7\r\nhstrlen\r\n$6\r\nlength\r\n$3\r\nkey\r\n")
 	HandleConnection(conn2)
 
-	if !strings.Contains(conn2.String(), ":3") {
-		t.Errorf("expected :3 got value %s", conn2.String())
+	expectedResult := ":3"
+	if !strings.Contains(conn2.String(), expectedResult) {
+		t.Errorf("expected results '%s' got value '%s'", expectedResult, conn2.String())
 	}
 
 }
@@ -127,10 +140,10 @@ func TestHandleHstrlenInvalidArgs(t *testing.T) {
 	conn := GetConnectionMock("*2\r\n$7\r\nhstrlen\r\n$6\r\nlength\r\n")
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "incorrect number") {
-		t.Errorf("expected incorrect number of args error got value %s", conn.String())
+	expectedResult := "incorrect number"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
-
 }
 
 // HLEN tests
@@ -140,8 +153,9 @@ func TestHlenIncorrectArgs(t *testing.T) {
 	conn := GetConnectionMock("*1\r\n$4\r\nHLEN\r\n")
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "incorrect number of args") {
-		t.Errorf("expected to get incorrect number of args error, found: %s", conn.String())
+	expectedResult := "incorrect number"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -151,8 +165,9 @@ func TestHlenHashNotFound(t *testing.T) {
 	conn := GetConnectionMock("*2\r\n$4\r\nHLEN\r\n$6\r\nmissing\r\n")
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), ":0") {
-		t.Errorf("expected :0, found: %s", conn.String())
+	expectedResult := ":0"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
@@ -166,8 +181,9 @@ func TestHlen(t *testing.T) {
 	conn2 := GetConnectionMock("*2\r\n$4\r\nHLEN\r\n$4\r\ndata\r\n")
 	HandleConnection(conn2)
 
-	if !strings.Contains(conn.String(), ":3") {
-		t.Errorf("expected :3, found: %s", conn.String())
+	expectedResult := ":3"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
 
