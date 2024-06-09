@@ -147,7 +147,7 @@ func incr(args []resp.Serializable) resp.Serializable {
 
 	if !ok {
 		setData[args[0].Bulk] = "0"
-		return resp.Serializable{Typ: "integer", Num: 0}
+		val = "0"
 	}
 
 	num, err := strconv.ParseInt(val, 10, 64)

@@ -188,7 +188,7 @@ func TestIncrOnNewKey(t *testing.T) {
 	conn := GetConnectionMock("*2\r\n$4\r\nINCR\r\n$3\r\nnum\r\n")
 	HandleConnection(conn)
 
-	expectedResult := ":0"
+	expectedResult := ":1"
 
 	if !strings.Contains(conn.String(), expectedResult) {
 		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
