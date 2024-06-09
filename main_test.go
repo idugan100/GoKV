@@ -57,8 +57,9 @@ func TestStartServer(t *testing.T) {
 		t.Errorf("error when sending message over tcp connection %s", err.Error())
 	}
 
-	if !strings.Contains(string(response), "PONG") {
-		t.Errorf("expected response of PONG, recieved %s", string(response))
+	expectedResult := "PONG"
+	if !strings.Contains(string(response), expectedResult) {
+		t.Errorf("expected result of '%s', recieved '%s'", expectedResult, string(response))
 	}
 
 }
@@ -68,7 +69,8 @@ func TestHandleInvalidCommand(t *testing.T) {
 
 	HandleConnection(conn)
 
-	if !strings.Contains(conn.String(), "command not found") {
-		t.Errorf("expected response of command not found got response of %s", conn.String())
+	expectedResult := "command not found"
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected result of '%s' got response of '%s'", expectedResult, conn.String())
 	}
 }
