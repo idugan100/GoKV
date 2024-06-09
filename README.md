@@ -16,6 +16,7 @@ This is a simple in-memory key-value store written in Go. All it's commands are 
 - [GETSET](https://redis.io/docs/latest/commands/getset/)
 - [SETNX](https://redis.io/docs/latest/commands/setnx/)
 - [INCR](https://redis.io/docs/latest/commands/incr/)
+- [DECR](https://redis.io/docs/latest/commands/decr/)
 - [HSET](https://redis.io/docs/latest/commands/hset/)
 - [HGET](https://redis.io/docs/latest/commands/hget/)
 - [HEXISTS](https://redis.io/docs/latest/commands/hexists/)
