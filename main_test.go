@@ -36,7 +36,7 @@ func GetConnectionMock(inputString string) ConnectionMock {
 	return c
 }
 func TestStartServer(t *testing.T) {
-	go startServer()
+	go startServer("6379")
 	conn, err := net.Dial("tcp", "localhost:6379")
 
 	if err != nil {
