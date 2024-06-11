@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"net"
@@ -11,12 +12,14 @@ import (
 )
 
 func main() {
-	startServer()
+	port := flag.String("port", "6379", "use this flag to set the port the GoKV server will run on")
+	flag.Parse()
+	startServer(*port)
 }
 
-func startServer() {
+func startServer(port string) {
 	fmt.Println("starting GoKV server ...")
-	l, err := net.Listen("tcp", ":6379")
+	l, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		fmt.Println(err)
 		return
