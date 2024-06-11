@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io"
 	"net"
 	"strings"
+	"time"
 
 	"github.com/idugan100/GoKV/handlers"
 	"github.com/idugan100/GoKV/resp"
@@ -19,7 +21,10 @@ func main() {
 
 func startServer(port string) {
 	fmt.Println("starting GoKV server ...")
-	l, err := net.Listen("tcp", ":"+port)
+
+	config := net.ListenConfig{KeepAlive: 5 * time.Minute}
+
+	l, err := config.Listen(context.TODO(), "tcp", ":"+port)
 	if err != nil {
 		fmt.Println(err)
 		return
