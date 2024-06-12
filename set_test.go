@@ -274,3 +274,53 @@ func TestDecrInvalidNumberOfArgs(t *testing.T) {
 		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
 	}
 }
+
+func TestRenameInvalidNumberOfArgs(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*2\r\n$6\r\nRENAME\r\n$3\r\nkey\r\n")
+	HandleConnection(conn)
+
+	expectedResult := "incorrect number of arguements"
+
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
+	}
+}
+
+func TestRenameKeyNotFound(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*3\r\n$6\r\nRENAME\r\n$3\r\nkey\r\n$6\r\nnewkey\r\n")
+	HandleConnection(conn)
+
+	expectedResult := "key to be renamed not found"
+
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
+	}
+}
+
+func TestRenameKeyFound(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$3\r\nval\r\n")
+	HandleConnection(conn)
+
+	conn2 := GetConnectionMock("*3\r\n$6\r\nRENAME\r\n$3\r\nkey\r\n$6\r\nnewkey\r\n")
+	HandleConnection(conn2)
+
+	expectedResult := "OK"
+
+	if !strings.Contains(conn2.String(), expectedResult) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn2.String())
+	}
+
+	conn3 := GetConnectionMock("*2\r\n$3\r\nGET\r\n$6\r\nnewkey\r\n")
+	HandleConnection(conn3)
+	expectedResult2 := "val"
+
+	if !strings.Contains(conn3.String(), expectedResult2) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult2, conn3.String())
+	}
+}
