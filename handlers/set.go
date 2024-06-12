@@ -182,3 +182,20 @@ func decr(args []resp.Serializable) resp.Serializable {
 
 	return resp.Serializable{Typ: "integer", Num: int(num)}
 }
+
+func rename(args []resp.Serializable) resp.Serializable {
+	if len(args) != 2 {
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements for RENAME command"}
+	}
+	setMU.Lock()
+	defer setMU.Unlock()
+
+	val, ok := setData[args[0].Bulk]
+	if !ok {
+		return resp.Serializable{Typ: "error", Str: "key to be renamed not found"}
+	}
+
+	delete(setData, args[0].Bulk)
+	setData[args[1].Bulk] = val
+	return resp.Serializable{Typ: "bulk", Bulk: "OK"}
+}

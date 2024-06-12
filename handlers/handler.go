@@ -24,6 +24,7 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"LOLWUT":    lolwut,
 	"FLUSHALL":  flushall,
 	"GETSET":    getset,
+	"RENAME":    rename,
 	"HSET":      hset,
 	"HGET":      hget,
 	"HEXISTS":   hexists,
