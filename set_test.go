@@ -324,3 +324,57 @@ func TestRenameKeyFound(t *testing.T) {
 		t.Errorf("expected to find '%s', found '%s'", expectedResult2, conn3.String())
 	}
 }
+
+func TestDecrbyInvalidNumberOfArgs(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*2\r\n$6\r\nRENAME\r\n$3\r\nkey\r\n")
+	HandleConnection(conn)
+
+	expectedResult := "incorrect number of arguments"
+
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
+	}
+}
+
+func TestDecrbyInvalidType(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*3\r\n$6\r\nDECRBY\r\n$3\r\nkey\r\n$3\r\nval\r\n")
+	HandleConnection(conn)
+
+	expectedResult := "incorrect data type"
+
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
+	}
+}
+
+func TestDecrbyKeyNotFound(t *testing.T) {
+	defer handlers.ClearData()
+
+	conn := GetConnectionMock("*3\r\n$6\r\nDECRBY\r\n$3\r\nnum\r\n$1\r\n2\r\n")
+	HandleConnection(conn)
+
+	expectedResult := ":-2"
+
+	if !strings.Contains(conn.String(), expectedResult) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
+	}
+}
+
+func TestDecrby(t *testing.T) {
+	defer handlers.ClearData()
+	conn := GetConnectionMock("*3\r\n$3\r\nSET\r\n$3\r\nnum\r\n$1\r\n5\r\n")
+	HandleConnection(conn)
+
+	conn2 := GetConnectionMock("*3\r\n$6\r\nDECRBY\r\n$3\r\nnum\r\n$1\r\n2\r\n")
+	HandleConnection(conn2)
+
+	expectedResult := ":3"
+
+	if !strings.Contains(conn2.String(), expectedResult) {
+		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn2.String())
+	}
+}
