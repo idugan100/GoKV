@@ -102,7 +102,7 @@ func strlen(args []resp.Serializable) resp.Serializable {
 
 func getset(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements for GETSET command"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for GETSET command"}
 	}
 	setMU.Lock()
 	oldSerializable, ok := setData[args[0].Bulk]
@@ -119,7 +119,7 @@ func getset(args []resp.Serializable) resp.Serializable {
 
 func setnx(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements for SETNX command"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for SETNX command"}
 	}
 	setMU.RLock()
 	_, ok := setData[args[0].Bulk]
@@ -138,7 +138,7 @@ func setnx(args []resp.Serializable) resp.Serializable {
 
 func incr(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements for INCR command"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for INCR command"}
 	}
 	setMU.Lock()
 	defer setMU.Unlock()
@@ -161,7 +161,7 @@ func incr(args []resp.Serializable) resp.Serializable {
 }
 func decr(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements for DECR command"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for DECR command"}
 	}
 	setMU.Lock()
 	defer setMU.Unlock()
@@ -183,9 +183,38 @@ func decr(args []resp.Serializable) resp.Serializable {
 	return resp.Serializable{Typ: "integer", Num: int(num)}
 }
 
+func decrby(args []resp.Serializable) resp.Serializable {
+	if len(args) != 2 {
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for DECRBY command"}
+	}
+	setMU.Lock()
+	defer setMU.Unlock()
+
+	val, ok := setData[args[0].Bulk]
+
+	if !ok {
+		setData[args[0].Bulk] = "0"
+		val = "0"
+	}
+
+	num, err := strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: "incorrect data type for DECRBY operation"}
+	}
+
+	decrementAmount, err := strconv.ParseInt(args[1].Bulk, 10, 64)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: "incorrect data type for decrement amount"}
+	}
+	num -= decrementAmount
+	setData[args[0].Bulk] = strconv.Itoa(int(num))
+
+	return resp.Serializable{Typ: "integer", Num: int(num)}
+}
+
 func rename(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements for RENAME command"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for RENAME command"}
 	}
 	setMU.Lock()
 	defer setMU.Unlock()

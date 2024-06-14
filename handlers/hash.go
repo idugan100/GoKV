@@ -5,7 +5,7 @@ import "github.com/idugan100/GoKV/resp"
 func hset(args []resp.Serializable) resp.Serializable {
 
 	if len(args)%2 != 1 || len(args) < 3 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements - must have hash key and then key value pairs"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments - must have hash key and then key value pairs"}
 	}
 	hsetMU.Lock()
 	hsetData[args[0].Bulk] = map[string]string{}
@@ -19,7 +19,7 @@ func hset(args []resp.Serializable) resp.Serializable {
 
 func hget(args []resp.Serializable) resp.Serializable {
 	if len(args) < 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguements - must have hash key and then value key"}
+		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments - must have hash key and then value key"}
 	}
 
 	hsetMU.RLock()
