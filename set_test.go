@@ -125,7 +125,7 @@ func TestSetNXInvalidNumberOfArgs(t *testing.T) {
 	conn := GetConnectionMock("*2\r\n$5\r\nsetnx\r\n$3\r\nkey\r\n")
 	HandleConnection(conn)
 
-	expectedResult := "incorrect number of arguements"
+	expectedResult := "incorrect number of arguments"
 	if !strings.Contains(conn.String(), expectedResult) {
 		t.Errorf("expected to find %s, found: %s", expectedResult, conn.String())
 	}
@@ -165,7 +165,7 @@ func TestIncrInvalidNumberOfArgs(t *testing.T) {
 	conn := GetConnectionMock("*1\r\n$4\r\nINCR\r\b")
 	HandleConnection(conn)
 
-	expectedResult := "incorrect number of arguements"
+	expectedResult := "incorrect number of arguments"
 
 	if !strings.Contains(conn.String(), expectedResult) {
 		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
@@ -268,7 +268,7 @@ func TestDecrInvalidNumberOfArgs(t *testing.T) {
 	conn := GetConnectionMock("*1\r\n$4\r\nDECR\r\b")
 	HandleConnection(conn)
 
-	expectedResult := "incorrect number of arguements"
+	expectedResult := "incorrect number of arguments"
 
 	if !strings.Contains(conn.String(), expectedResult) {
 		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
@@ -281,7 +281,7 @@ func TestRenameInvalidNumberOfArgs(t *testing.T) {
 	conn := GetConnectionMock("*2\r\n$6\r\nRENAME\r\n$3\r\nkey\r\n")
 	HandleConnection(conn)
 
-	expectedResult := "incorrect number of arguements"
+	expectedResult := "incorrect number of arguments"
 
 	if !strings.Contains(conn.String(), expectedResult) {
 		t.Errorf("expected to find '%s', found '%s'", expectedResult, conn.String())
