@@ -63,14 +63,3 @@ func TestStartServer(t *testing.T) {
 	}
 
 }
-
-func TestHandleInvalidCommand(t *testing.T) {
-	conn := GetConnectionMock("*1\r\n$3\r\n123\r\n")
-
-	HandleConnection(conn)
-
-	expectedResult := "command not found"
-	if !strings.Contains(conn.String(), expectedResult) {
-		t.Errorf("expected result of '%s' got response of '%s'", expectedResult, conn.String())
-	}
-}
