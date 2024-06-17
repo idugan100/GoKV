@@ -12,7 +12,7 @@ type TableTest struct {
 	ExpectedOutput string
 }
 
-var TableTests = []TableTest{
+var SetTableTests = []TableTest{
 	{[]string{"*1\r\n$3\r\nset\r\n"}, "incorrect number"},
 	{[]string{"*1\r\n$3\r\nget\r\n"}, "incorrect number"},
 	{[]string{"*2\r\n$3\r\nget\r\n$3\r\nmissing\r\n"}, "_\r\n"},
@@ -43,7 +43,7 @@ var TableTests = []TableTest{
 }
 
 func TestSetCommands(t *testing.T) {
-	for _, test := range TableTests {
+	for _, test := range SetTableTests {
 
 		var conn ConnectionMock
 		for _, command := range test.Commands {
