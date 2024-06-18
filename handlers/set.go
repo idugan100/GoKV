@@ -77,10 +77,12 @@ func exists(args []resp.Serializable) resp.Serializable {
 		return resp.Serializable{Typ: "error", Str: "incorrect number of args for exisits command"}
 	}
 	counter := 0
+
+	setMU.RLock()
+	defer setMU.RUnlock()
+
 	for _, a := range args {
-		setMU.RLock()
 		_, ok := setData[a.Bulk]
-		setMU.RUnlock()
 		if ok {
 			counter++
 		}
@@ -121,17 +123,16 @@ func setnx(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
 		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for SETNX command"}
 	}
-	setMU.RLock()
+	setMU.Lock()
+	defer setMU.Unlock()
+
 	_, ok := setData[args[0].Bulk]
-	setMU.RUnlock()
 
 	if ok {
 		return resp.Serializable{Typ: "integer", Num: 0}
 	}
 
-	setMU.Lock()
 	setData[args[0].Bulk] = args[1].Bulk
-	setMU.Unlock()
 	return resp.Serializable{Typ: "integer", Num: 1}
 
 }
@@ -159,6 +160,7 @@ func incr(args []resp.Serializable) resp.Serializable {
 
 	return resp.Serializable{Typ: "integer", Num: int(num)}
 }
+
 func decr(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
 		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for DECR command"}
