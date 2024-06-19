@@ -42,7 +42,7 @@ type InvalidArgsNumberError struct {
 }
 
 func (i InvalidArgsNumberError) Error() string {
-	return fmt.Sprintf("Invalid number of arguments for '%s' command", i.Command)
+	return fmt.Sprintf("invalid number of arguments for '%s' command", i.Command)
 }
 
 type InvalidDataTypeError struct {
@@ -50,7 +50,7 @@ type InvalidDataTypeError struct {
 }
 
 func (i InvalidDataTypeError) Error() string {
-	return fmt.Sprintf("Data type for '%s' command", i.Command)
+	return fmt.Sprintf("data type for '%s' command", i.Command)
 }
 
 func ClearData() {
