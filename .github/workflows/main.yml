@@ -1,4 +1,4 @@
-name: Tests/Linting/Formatting/Security
+name: GoKV CI
 
 on:
   push:
