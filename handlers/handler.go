@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/idugan100/GoKV/resp"
@@ -34,6 +35,22 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"HGETALL":   hgetall,
 	"HSETNX":    hsetnx,
 	"HDEL":      hdel,
+}
+
+type InvalidArgsNumberError struct {
+	Command string
+}
+
+func (i InvalidArgsNumberError) Error() string {
+	return fmt.Sprintf("invalid number of arguments for '%s' command", i.Command)
+}
+
+type InvalidDataTypeError struct {
+	Command string
+}
+
+func (i InvalidDataTypeError) Error() string {
+	return fmt.Sprintf("data type for '%s' command", i.Command)
 }
 
 func ClearData() {

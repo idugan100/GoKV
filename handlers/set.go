@@ -9,7 +9,7 @@ import (
 
 func set(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arg for SET command"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "SET"}.Error()}
 	}
 	key := args[0].Bulk
 	val := args[1].Bulk
@@ -22,7 +22,7 @@ func set(args []resp.Serializable) resp.Serializable {
 
 func get(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arg for GET command"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "GET"}.Error()}
 	}
 	var val string
 
@@ -37,7 +37,7 @@ func get(args []resp.Serializable) resp.Serializable {
 
 func del(args []resp.Serializable) resp.Serializable {
 	if len(args) < 1 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of args for DEL command"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "DEL"}.Error()}
 	}
 	deletedCounter := 0
 	setMU.Lock()
@@ -74,7 +74,7 @@ func randkey(args []resp.Serializable) resp.Serializable {
 
 func exists(args []resp.Serializable) resp.Serializable {
 	if len(args) < 1 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of args for exisits command"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "EXISTS"}.Error()}
 	}
 	counter := 0
 
@@ -92,7 +92,7 @@ func exists(args []resp.Serializable) resp.Serializable {
 
 func strlen(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of args for Strlen command"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "STRLEN"}.Error()}
 	}
 	setMU.RLock()
 	val := setData[args[0].Bulk]
@@ -104,7 +104,7 @@ func strlen(args []resp.Serializable) resp.Serializable {
 
 func getset(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for GETSET command"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "GETSET"}.Error()}
 	}
 	setMU.Lock()
 	oldSerializable, ok := setData[args[0].Bulk]
@@ -121,7 +121,7 @@ func getset(args []resp.Serializable) resp.Serializable {
 
 func setnx(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for SETNX command"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "SETNX"}.Error()}
 	}
 	setMU.Lock()
 	defer setMU.Unlock()
@@ -139,7 +139,7 @@ func setnx(args []resp.Serializable) resp.Serializable {
 
 func incr(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for INCR command"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "INCR"}.Error()}
 	}
 	setMU.Lock()
 	defer setMU.Unlock()
@@ -153,7 +153,7 @@ func incr(args []resp.Serializable) resp.Serializable {
 
 	num, err := strconv.ParseInt(val, 10, 64)
 	if err != nil {
-		return resp.Serializable{Typ: "error", Str: "incorrect data type for INCR operation"}
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "INCR"}.Error()}
 	}
 	num++
 	setData[args[0].Bulk] = strconv.Itoa(int(num))
@@ -163,7 +163,7 @@ func incr(args []resp.Serializable) resp.Serializable {
 
 func decr(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for DECR command"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "DECR"}.Error()}
 	}
 	setMU.Lock()
 	defer setMU.Unlock()
@@ -177,7 +177,7 @@ func decr(args []resp.Serializable) resp.Serializable {
 
 	num, err := strconv.ParseInt(val, 10, 64)
 	if err != nil {
-		return resp.Serializable{Typ: "error", Str: "incorrect data type for DECR operation"}
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "DECR"}.Error()}
 	}
 	num--
 	setData[args[0].Bulk] = strconv.Itoa(int(num))
@@ -187,7 +187,7 @@ func decr(args []resp.Serializable) resp.Serializable {
 
 func decrby(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for DECRBY command"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "DECRBY"}.Error()}
 	}
 	setMU.Lock()
 	defer setMU.Unlock()
@@ -201,12 +201,12 @@ func decrby(args []resp.Serializable) resp.Serializable {
 
 	num, err := strconv.ParseInt(val, 10, 64)
 	if err != nil {
-		return resp.Serializable{Typ: "error", Str: "incorrect data type for DECRBY operation"}
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "DECRBY"}.Error()}
 	}
 
 	decrementAmount, err := strconv.ParseInt(args[1].Bulk, 10, 64)
 	if err != nil {
-		return resp.Serializable{Typ: "error", Str: "incorrect data type for decrement amount"}
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "DECRBY"}.Error()}
 	}
 	num -= decrementAmount
 	setData[args[0].Bulk] = strconv.Itoa(int(num))
@@ -216,7 +216,7 @@ func decrby(args []resp.Serializable) resp.Serializable {
 
 func rename(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments for RENAME command"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "RENAME"}.Error()}
 	}
 	setMU.Lock()
 	defer setMU.Unlock()

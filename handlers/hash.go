@@ -5,7 +5,7 @@ import "github.com/idugan100/GoKV/resp"
 func hset(args []resp.Serializable) resp.Serializable {
 
 	if len(args)%2 != 1 || len(args) < 3 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments - must have hash key and then key value pairs"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "HSET"}.Error()}
 	}
 	hsetMU.Lock()
 	hsetData[args[0].Bulk] = map[string]string{}
@@ -19,7 +19,7 @@ func hset(args []resp.Serializable) resp.Serializable {
 
 func hget(args []resp.Serializable) resp.Serializable {
 	if len(args) < 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of arguments - must have hash key and then value key"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "HGET"}.Error()}
 	}
 
 	hsetMU.RLock()
@@ -47,7 +47,7 @@ func hget(args []resp.Serializable) resp.Serializable {
 
 func hexists(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of args, expected hashkey and field key"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "HEXISTS"}.Error()}
 	}
 	hsetMU.RLock()
 	_, okKey := hsetData[args[0].Bulk]
@@ -63,7 +63,7 @@ func hexists(args []resp.Serializable) resp.Serializable {
 
 func hstrlen(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of args"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "HSTRLEN"}.Error()}
 	}
 	hsetMU.RLock()
 	val, ok := hsetData[args[0].Bulk][args[1].Bulk]
@@ -76,7 +76,7 @@ func hstrlen(args []resp.Serializable) resp.Serializable {
 
 func hlen(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of args"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "HLEN"}.Error()}
 	}
 
 	hsetMU.RLock()
@@ -92,7 +92,7 @@ func hlen(args []resp.Serializable) resp.Serializable {
 
 func hgetall(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of args"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "HGETALL"}.Error()}
 	}
 	hsetMU.RLock()
 	val, ok := hsetData[args[0].Bulk]
@@ -110,7 +110,7 @@ func hgetall(args []resp.Serializable) resp.Serializable {
 
 func hsetnx(args []resp.Serializable) resp.Serializable {
 	if len(args) != 3 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of args"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "HSETNX"}.Error()}
 	}
 	hsetMU.Lock()
 	defer hsetMU.Unlock()
@@ -128,7 +128,7 @@ func hsetnx(args []resp.Serializable) resp.Serializable {
 
 func hdel(args []resp.Serializable) resp.Serializable {
 	if len(args) < 2 {
-		return resp.Serializable{Typ: "error", Str: "incorrect number of args"}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "HDEL"}.Error()}
 	}
 	numFields := len(args) - 1
 	numDeleted := 0
