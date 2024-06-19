@@ -8,7 +8,7 @@ This is a simple in-memory key-value store written in Go. All the commands are r
 - [PING](https://redis.io/docs/latest/commands/ping/)
 - [SET](https://redis.io/docs/latest/commands/set/)
 - [DEL](https://redis.io/docs/latest/commands/del/)
-- [RANDOMKEY](https://redis.io/docs/latest/commands/randkey/)
+- [RANDOMKEY](https://redis.io/docs/latest/commands/randomkey/)
 - [EXISTS](https://redis.io/docs/latest/commands/exists/)
 - [STRLEN](https://redis.io/docs/latest/commands/strlen/)
 - [LOLWUT](https://redis.io/docs/latest/commands/lolwut/)
