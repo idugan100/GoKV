@@ -45,6 +45,14 @@ func (i InvalidArgsNumberError) Error() string {
 	return fmt.Sprintf("Invalid number of arguments for '%s' command", i.Command)
 }
 
+type InvalidDataTypeError struct {
+	Command string
+}
+
+func (i InvalidDataTypeError) Error() string {
+	return fmt.Sprintf("Data type for '%s' command", i.Command)
+}
+
 func ClearData() {
 	setData = map[string]string{}
 	hsetData = map[string]map[string]string{}

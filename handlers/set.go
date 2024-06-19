@@ -153,7 +153,7 @@ func incr(args []resp.Serializable) resp.Serializable {
 
 	num, err := strconv.ParseInt(val, 10, 64)
 	if err != nil {
-		return resp.Serializable{Typ: "error", Str: "incorrect data type for INCR operation"}
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "INCR"}.Error()}
 	}
 	num++
 	setData[args[0].Bulk] = strconv.Itoa(int(num))
@@ -177,7 +177,7 @@ func decr(args []resp.Serializable) resp.Serializable {
 
 	num, err := strconv.ParseInt(val, 10, 64)
 	if err != nil {
-		return resp.Serializable{Typ: "error", Str: "incorrect data type for DECR operation"}
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "DECR"}.Error()}
 	}
 	num--
 	setData[args[0].Bulk] = strconv.Itoa(int(num))
@@ -201,12 +201,12 @@ func decrby(args []resp.Serializable) resp.Serializable {
 
 	num, err := strconv.ParseInt(val, 10, 64)
 	if err != nil {
-		return resp.Serializable{Typ: "error", Str: "incorrect data type for DECRBY operation"}
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "DECRBY"}.Error()}
 	}
 
 	decrementAmount, err := strconv.ParseInt(args[1].Bulk, 10, 64)
 	if err != nil {
-		return resp.Serializable{Typ: "error", Str: "incorrect data type for decrement amount"}
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "DECRBY"}.Error()}
 	}
 	num -= decrementAmount
 	setData[args[0].Bulk] = strconv.Itoa(int(num))
