@@ -180,11 +180,11 @@ func incrby(args []resp.Serializable) resp.Serializable {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "INCRBY"}.Error()}
 	}
 
-	decrementAmount, err := strconv.ParseInt(args[1].Bulk, 10, 64)
+	incrementAmount, err := strconv.ParseInt(args[1].Bulk, 10, 64)
 	if err != nil {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "INCRBY"}.Error()}
 	}
-	num += decrementAmount
+	num += incrementAmount
 	setData[args[0].Bulk] = strconv.Itoa(int(num))
 
 	return resp.Serializable{Typ: "integer", Num: int(num)}
