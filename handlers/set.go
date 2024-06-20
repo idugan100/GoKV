@@ -161,6 +161,35 @@ func incr(args []resp.Serializable) resp.Serializable {
 	return resp.Serializable{Typ: "integer", Num: int(num)}
 }
 
+func incrby(args []resp.Serializable) resp.Serializable {
+	if len(args) != 2 {
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "INCRBY"}.Error()}
+	}
+	setMU.Lock()
+	defer setMU.Unlock()
+
+	val, ok := setData[args[0].Bulk]
+
+	if !ok {
+		setData[args[0].Bulk] = "0"
+		val = "0"
+	}
+
+	num, err := strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "INCRBY"}.Error()}
+	}
+
+	incrementAmount, err := strconv.ParseInt(args[1].Bulk, 10, 64)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "INCRBY"}.Error()}
+	}
+	num += incrementAmount
+	setData[args[0].Bulk] = strconv.Itoa(int(num))
+
+	return resp.Serializable{Typ: "integer", Num: int(num)}
+}
+
 func decr(args []resp.Serializable) resp.Serializable {
 	if len(args) != 1 {
 		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "DECR"}.Error()}
