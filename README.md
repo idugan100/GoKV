@@ -29,6 +29,7 @@ This is a simple in-memory key-value store written in Go. All the commands are r
 - [HGETALL](https://redis.io/docs/latest/commands/hgetall/)
 - [HSETNX](https://redis.io/docs/latest/commands/hsetnx/)
 - [HDEL](https://redis.io/docs/latest/commands/hdel/)
+- [LPUSH](https://redis.io/docs/latest/commands/lpush/)
 
 
 # Benchmark

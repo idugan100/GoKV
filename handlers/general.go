@@ -1,6 +1,10 @@
 package handlers
 
-import "github.com/idugan100/GoKV/resp"
+import (
+	"container/list"
+
+	"github.com/idugan100/GoKV/resp"
+)
 
 func ping(args []resp.Serializable) resp.Serializable {
 	return resp.Serializable{Typ: "bulk", Bulk: "PONG"}
@@ -17,5 +21,8 @@ func flushall(args []resp.Serializable) resp.Serializable {
 	hsetMU.Lock()
 	hsetData = map[string]map[string]string{}
 	hsetMU.Unlock()
+	listMU.Lock()
+	listData = map[string]list.List{}
+	listMU.Unlock()
 	return resp.Serializable{Typ: "string", Str: "OK"}
 }

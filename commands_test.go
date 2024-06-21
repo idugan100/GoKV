@@ -66,6 +66,9 @@ var CommandTableTests = []TableTest{
 	{[]string{"*3\r\n$3\r\nset\r\n$3\r\nnum\r\n$3\r\none\r\n", "*2\r\n$4\r\nDECR\r\n$3\r\nnum\r\n"}, handlers.InvalidDataTypeError{Command: "DECR"}.Error()},
 	{[]string{"*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$3\r\nval\r\n", "*3\r\n$6\r\nRENAME\r\n$3\r\nkey\r\n$6\r\nnewkey\r\n", "*2\r\n$3\r\nGET\r\n$6\r\nnewkey\r\n"}, "val"},
 	{[]string{"*2\r\n$5\r\nsetnx\r\n$3\r\nkey\r\n"}, handlers.InvalidArgsNumberError{Command: "SETNX"}.Error()},
+	{[]string{"*2\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n"}, handlers.InvalidArgsNumberError{Command: "LPUSH"}.Error()},
+	{[]string{"*3\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$5\r\nvalue\r\n"}, ":1"},
+	{[]string{"*3\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$5\r\nvalue\r\n", "*4\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n"}, ":3"},
 }
 
 func TestCommands(t *testing.T) {
