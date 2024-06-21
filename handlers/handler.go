@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"container/list"
 	"fmt"
 	"sync"
 
@@ -11,6 +12,8 @@ var setData = map[string]string{}
 var setMU = sync.RWMutex{}
 var hsetData = map[string]map[string]string{}
 var hsetMU = sync.RWMutex{}
+var listData = map[string]list.List{}
+var listMU = sync.RWMutex{}
 var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"PING":      ping,
 	"SET":       set,
@@ -36,6 +39,7 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"HGETALL":   hgetall,
 	"HSETNX":    hsetnx,
 	"HDEL":      hdel,
+	"LPUSH":     lpush,
 }
 
 type InvalidArgsNumberError struct {
