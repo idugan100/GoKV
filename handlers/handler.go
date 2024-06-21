@@ -61,4 +61,6 @@ func (i InvalidDataTypeError) Error() string {
 func ClearData() {
 	setData = map[string]string{}
 	hsetData = map[string]map[string]string{}
+	listData = map[string]list.List{}
+
 }
