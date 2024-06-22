@@ -69,6 +69,12 @@ var CommandTableTests = []TableTest{
 	{[]string{"*2\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n"}, handlers.InvalidArgsNumberError{Command: "LPUSH"}.Error()},
 	{[]string{"*3\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$5\r\nvalue\r\n"}, ":1"},
 	{[]string{"*3\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$5\r\nvalue\r\n", "*4\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$6\r\nvalue2\r\n$6\r\nvalue3\r\n"}, ":3"},
+	{[]string{"*4\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$2\r\nb\r\n", "*2\r\n$4\r\nLPOP\r\n$3\r\nkey\r\n"}, "b"},
+	{[]string{"*1\r\n$4\r\nLPOP\r\n"}, handlers.InvalidArgsNumberError{Command: "LPOP"}.Error()},
+	{[]string{"*2\r\n$4\r\nLPOP\r\n$3\r\nkey\r\n"}, "_\r\n"},
+	{[]string{"*4\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n", "*3\r\n$4\r\nLPOP\r\n$3\r\nkey\r\n$1\r\n2\r\n"}, "*2\r\n$1\r\nb\r\n$1\r\na\r\n"},
+	{[]string{"*4\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n", "*3\r\n$4\r\nLPOP\r\n$3\r\nkey\r\n$1\r\n3\r\n"}, "*2\r\n$1\r\nb\r\n$1\r\na\r\n"},
+	{[]string{"*4\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n", "*3\r\n$4\r\nLPOP\r\n$3\r\nkey\r\n$1\r\na\r\n"}, handlers.InvalidDataTypeError{Command: "LPOP"}.Error()},
 }
 
 func TestCommands(t *testing.T) {
