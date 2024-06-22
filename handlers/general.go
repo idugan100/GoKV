@@ -22,7 +22,7 @@ func flushall(args []resp.Serializable) resp.Serializable {
 	hsetData = map[string]map[string]string{}
 	hsetMU.Unlock()
 	listMU.Lock()
-	listData = map[string]list.List{}
+	listData = map[string]*list.List{}
 	listMU.Unlock()
 	return resp.Serializable{Typ: "string", Str: "OK"}
 }
