@@ -41,6 +41,7 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"HDEL":      hdel,
 	"LPUSH":     lpush,
 	"LPOP":      lpop,
+	"LLEN":      llen,
 }
 
 type InvalidArgsNumberError struct {

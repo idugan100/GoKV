@@ -64,3 +64,18 @@ func lpop(args []resp.Serializable) resp.Serializable {
 	}
 
 }
+
+func llen(args []resp.Serializable) resp.Serializable {
+	if len(args) != 1 {
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "LLEN"}.Error()}
+	}
+	listMU.RLock()
+	defer listMU.RUnlock()
+
+	l, ok := listData[args[0].Bulk]
+
+	if !ok {
+		return resp.Serializable{Typ: "integer", Num: 0}
+	}
+	return resp.Serializable{Typ: "integer", Num: l.Len()}
+}
