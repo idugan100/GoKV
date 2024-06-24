@@ -78,6 +78,10 @@ var CommandTableTests = []TableTest{
 	{[]string{"*4\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n", "*2\r\n$4\r\nLLEN\r\n$3\r\nkey\r\n"}, ":2"},
 	{[]string{"*2\r\n$4\r\nLLEN\r\n$3\r\nkey\r\n"}, ":0"},
 	{[]string{"*3\r\n$4\r\nLLEN\r\n$3\r\nkey\r\n$5\r\nvalue\r\n"}, handlers.InvalidArgsNumberError{Command: "LLEN"}.Error()},
+	{[]string{"*4\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n", "*3\r\n$4\r\nLPOP\r\n$3\r\nkey\r\n$1\r\n2\r\n"}, "*2\r\n$1\r\na\r\n$1\r\nb\r\n"},
+	{[]string{"*4\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n", "*3\r\n$4\r\nLPOP\r\n$3\r\nkey\r\n$1\r\n3\r\n"}, "*2\r\n$1\r\na\r\n$1\r\nb\r\n"},
+	{[]string{"*4\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n", "*2\r\n$4\r\nLLEN\r\n$3\r\nkey\r\n"}, ":2"},
+	{[]string{"*2\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n"}, handlers.InvalidArgsNumberError{Command: "RPUSH"}.Error()},
 }
 
 func TestCommands(t *testing.T) {
