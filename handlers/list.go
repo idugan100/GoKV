@@ -97,3 +97,42 @@ func llen(args []resp.Serializable) resp.Serializable {
 	}
 	return resp.Serializable{Typ: "integer", Num: l.Len()}
 }
+
+func lindex(args []resp.Serializable) resp.Serializable {
+	if len(args) != 2 {
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "LINDEX"}.Error()}
+	}
+	listMU.RLock()
+	defer listMU.RUnlock()
+	l, ok := listData[args[0].Bulk]
+
+	if !ok {
+		return resp.Serializable{Typ: "error", Str: "key not found"}
+	}
+	index, err := strconv.Atoi(args[1].Bulk)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LINDEX"}.Error()}
+	}
+
+	//check if index is out of range
+	if (index > 0 && index > (l.Len()-1)) || (index < 0 && (l.Len()+index) < 0) {
+		return resp.Serializable{Typ: "null"}
+	}
+
+	var e *list.Element
+	if index >= 0 {
+
+		e = l.Front()
+		for range index {
+			e = e.Next()
+		}
+
+	} else {
+		e = l.Back()
+		for range (index + 1) * -1 {
+			e = e.Prev()
+		}
+	}
+
+	return resp.Serializable{Typ: "bulk", Bulk: e.Value.(string)}
+}
