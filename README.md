@@ -33,6 +33,7 @@ This is a simple in-memory key-value store written in Go. All the commands are r
 - [LPOP](https://redis.io/docs/latest/commands/lpop/)
 - [LLEN](https://redis.io/docs/latest/commands/llen/)
 - [RPUSH](https://redis.io/docs/latest/commands/rpush/)
+- [LINDEX](https://redis.io/docs/latest/commands/lindex/)
 
 # Benchmark
 ```

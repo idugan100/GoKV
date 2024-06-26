@@ -82,6 +82,13 @@ var CommandTableTests = []TableTest{
 	{[]string{"*4\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n", "*3\r\n$4\r\nLPOP\r\n$3\r\nkey\r\n$1\r\n3\r\n"}, "*2\r\n$1\r\na\r\n$1\r\nb\r\n"},
 	{[]string{"*4\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n", "*2\r\n$4\r\nLLEN\r\n$3\r\nkey\r\n"}, ":2"},
 	{[]string{"*2\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n"}, handlers.InvalidArgsNumberError{Command: "RPUSH"}.Error()},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*2\r\n$6\r\nLINDEX\r\n$3\r\nkey\r\n"}, handlers.InvalidArgsNumberError{Command: "LINDEX"}.Error()},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*3\r\n$6\r\nLINDEX\r\n$3\r\nkey\r\n$1\r\n3\r\n"}, "_\r\n"},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*3\r\n$6\r\nLINDEX\r\n$3\r\nkey\r\n$2\r\n-4\r\n"}, "_\r\n"},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*3\r\n$6\r\nLINDEX\r\n$3\r\nkey\r\n$1\r\n1\r\n"}, "$1\r\nb\r\n"},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*3\r\n$6\r\nLINDEX\r\n$3\r\nkey\r\n$2\r\n-3\r\n"}, "$1\r\na\r\n"},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*3\r\n$6\r\nLINDEX\r\n$3\r\nkey\r\n$1\r\na\r\n"}, handlers.InvalidDataTypeError{Command: "LINDEX"}.Error()},
+	{[]string{"*3\r\n$6\r\nLINDEX\r\n$3\r\nkey\r\n$2\r\n-3\r\n"}, "key not found"},
 }
 
 func TestCommands(t *testing.T) {
