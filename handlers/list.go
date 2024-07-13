@@ -139,7 +139,7 @@ func lindex(args []resp.Serializable) resp.Serializable {
 
 func rpop(args []resp.Serializable) resp.Serializable {
 	if len(args) < 1 {
-		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "LPOP"}.Error()}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "RPOP"}.Error()}
 	}
 	listMU.Lock()
 	defer listMU.Unlock()
@@ -159,7 +159,7 @@ func rpop(args []resp.Serializable) resp.Serializable {
 	} else {
 		number, err := strconv.Atoi(args[1].Bulk)
 		if err != nil {
-			return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LPOP"}.Error()}
+			return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "RPOP"}.Error()}
 		}
 		var results []resp.Serializable
 		for range number {
