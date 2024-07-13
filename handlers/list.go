@@ -136,3 +136,65 @@ func lindex(args []resp.Serializable) resp.Serializable {
 
 	return resp.Serializable{Typ: "bulk", Bulk: e.Value.(string)}
 }
+
+func ltrim(args []resp.Serializable) resp.Serializable {
+	if len(args) != 3 {
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "LTRIM"}.Error()}
+	}
+
+	listMU.Lock()
+	defer listMU.Unlock()
+
+	l, ok := listData[args[0].Bulk]
+	if !ok {
+		return resp.Serializable{Typ: "error", Str: "key not found"}
+	}
+
+	size := l.Len()
+	startindex, err := strconv.Atoi(args[1].Bulk)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LTRIM"}.Error()}
+	}
+
+	if startindex < 0 {
+		startindex = size + startindex
+		if startindex < 0 {
+			startindex = 0
+		}
+	}
+	if startindex >= size {
+		startindex = size - 1
+	}
+
+	endindex, err := strconv.Atoi(args[2].Bulk)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LTRIM"}.Error()}
+	}
+
+	if endindex < 0 {
+		endindex = size + endindex
+		if endindex < 0 {
+			endindex = 0
+		}
+	}
+	if endindex >= size {
+		endindex = size - 1
+	}
+
+	if startindex > endindex {
+		listData[args[0].Bulk] = nil
+
+		delete(listData, args[0].Bulk)
+		return resp.Serializable{Typ: "string", Str: "OK"}
+	}
+
+	for i := 0; i < startindex; i++ {
+		l.Remove(l.Front())
+	}
+	for i := endindex; i < l.Len(); i++ {
+		l.Remove(l.Back())
+	}
+	listData[args[0].Bulk] = l
+
+	return resp.Serializable{Typ: "string", Str: "OK"}
+}
