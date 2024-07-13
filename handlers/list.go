@@ -191,7 +191,7 @@ func ltrim(args []resp.Serializable) resp.Serializable {
 	for i := 0; i < startindex; i++ {
 		l.Remove(l.Front())
 	}
-	for i := endindex; i < l.Len(); i++ {
+	for i := endindex; i < (size - 1); i++ {
 		l.Remove(l.Back())
 	}
 	listData[args[0].Bulk] = l
