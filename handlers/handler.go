@@ -41,6 +41,7 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"HDEL":      hdel,
 	"LPUSH":     lpush,
 	"LPOP":      lpop,
+	"RPOP":      rpop,
 	"LLEN":      llen,
 	"RPUSH":     rpush,
 	"LINDEX":    lindex,
