@@ -141,12 +141,11 @@ func ltrim(args []resp.Serializable) resp.Serializable {
 	if len(args) != 3 {
 		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "LTRIM"}.Error()}
 	}
-
-	listMU.Lock()
+  listMU.Lock()
 	defer listMU.Unlock()
 
 	l, ok := listData[args[0].Bulk]
-	if !ok {
+  if !ok {
 		return resp.Serializable{Typ: "error", Str: "key not found"}
 	}
 
@@ -197,4 +196,45 @@ func ltrim(args []resp.Serializable) resp.Serializable {
 	listData[args[0].Bulk] = l
 
 	return resp.Serializable{Typ: "string", Str: "OK"}
+
+  
+func rpop(args []resp.Serializable) resp.Serializable {
+	if len(args) < 1 {
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "RPOP"}.Error()}
+	}
+  
+	listMU.Lock()
+	defer listMU.Unlock()
+
+	l, ok := listData[args[0].Bulk]
+
+	if !ok {
+		return resp.Serializable{Typ: "null"}
+	}
+
+	if len(args) == 1 {
+		val := l.Remove(l.Back())
+		if l.Len() == 0 {
+			delete(listData, args[0].Bulk)
+		}
+		return resp.Serializable{Typ: "bulk", Bulk: val.(string)}
+	} else {
+		number, err := strconv.Atoi(args[1].Bulk)
+		if err != nil {
+			return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "RPOP"}.Error()}
+		}
+		var results []resp.Serializable
+		for range number {
+			if l.Len() == 0 {
+				delete(listData, args[0].Bulk)
+				break
+			}
+			val := l.Remove(l.Back())
+			results = append(results, resp.Serializable{Typ: "bulk", Bulk: val.(string)})
+		}
+		listData[args[0].Bulk] = l
+
+		return resp.Serializable{Typ: "array", Array: results}
+	}
+
 }
