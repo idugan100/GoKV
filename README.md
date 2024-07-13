@@ -31,6 +31,7 @@ This is a simple in-memory key-value store written in Go. All the commands are r
 - [HDEL](https://redis.io/docs/latest/commands/hdel/)
 - [LPUSH](https://redis.io/docs/latest/commands/lpush/)
 - [LPOP](https://redis.io/docs/latest/commands/lpop/)
+- [RPOP](https://redis.io/docs/latest/commands/rpop/)
 - [LLEN](https://redis.io/docs/latest/commands/llen/)
 - [RPUSH](https://redis.io/docs/latest/commands/rpush/)
 - [LINDEX](https://redis.io/docs/latest/commands/lindex/)
