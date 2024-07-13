@@ -141,11 +141,11 @@ func ltrim(args []resp.Serializable) resp.Serializable {
 	if len(args) != 3 {
 		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "LTRIM"}.Error()}
 	}
-  listMU.Lock()
+	listMU.Lock()
 	defer listMU.Unlock()
 
 	l, ok := listData[args[0].Bulk]
-  if !ok {
+	if !ok {
 		return resp.Serializable{Typ: "error", Str: "key not found"}
 	}
 
@@ -196,13 +196,13 @@ func ltrim(args []resp.Serializable) resp.Serializable {
 	listData[args[0].Bulk] = l
 
 	return resp.Serializable{Typ: "string", Str: "OK"}
+}
 
-  
 func rpop(args []resp.Serializable) resp.Serializable {
 	if len(args) < 1 {
 		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "RPOP"}.Error()}
 	}
-  
+
 	listMU.Lock()
 	defer listMU.Unlock()
 
