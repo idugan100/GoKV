@@ -141,6 +141,7 @@ func ltrim(args []resp.Serializable) resp.Serializable {
 	if len(args) != 3 {
 		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "LTRIM"}.Error()}
 	}
+
 	listMU.Lock()
 	defer listMU.Unlock()
 
@@ -149,40 +150,34 @@ func ltrim(args []resp.Serializable) resp.Serializable {
 		return resp.Serializable{Typ: "error", Str: "key not found"}
 	}
 
+	normalize_index := func(index int, size int) int {
+		if index < 0 {
+			index = size + index
+			if index < 0 {
+				index = 0
+			}
+		}
+		if index >= size {
+			index = size - 1
+		}
+		return index
+	}
+
 	size := l.Len()
+
 	startindex, err := strconv.Atoi(args[1].Bulk)
 	if err != nil {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LTRIM"}.Error()}
 	}
-
-	if startindex < 0 {
-		startindex = size + startindex
-		if startindex < 0 {
-			startindex = 0
-		}
-	}
-	if startindex >= size {
-		startindex = size - 1
-	}
+	startindex = normalize_index(startindex, size)
 
 	endindex, err := strconv.Atoi(args[2].Bulk)
 	if err != nil {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LTRIM"}.Error()}
 	}
-
-	if endindex < 0 {
-		endindex = size + endindex
-		if endindex < 0 {
-			endindex = 0
-		}
-	}
-	if endindex >= size {
-		endindex = size - 1
-	}
+	endindex = normalize_index(endindex, size)
 
 	if startindex > endindex {
-		listData[args[0].Bulk] = nil
-
 		delete(listData, args[0].Bulk)
 		return resp.Serializable{Typ: "string", Str: "OK"}
 	}
