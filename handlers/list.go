@@ -150,19 +150,6 @@ func ltrim(args []resp.Serializable) resp.Serializable {
 		return resp.Serializable{Typ: "error", Str: "key not found"}
 	}
 
-	normalize_index := func(index int, size int) int {
-		if index < 0 {
-			index = size + index
-			if index < 0 {
-				index = 0
-			}
-		}
-		if index >= size {
-			index = size - 1
-		}
-		return index
-	}
-
 	size := l.Len()
 
 	startindex, err := strconv.Atoi(args[1].Bulk)
@@ -231,5 +218,46 @@ func rpop(args []resp.Serializable) resp.Serializable {
 
 		return resp.Serializable{Typ: "array", Array: results}
 	}
+
+}
+
+func lrange(args []resp.Serializable) resp.Serializable {
+	if len(args) != 3 {
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "LRANGE"}.Error()}
+	}
+	listMU.RLock()
+	defer listMU.RUnlock()
+
+	l, ok := listData[args[0].Bulk]
+
+	if !ok {
+		return resp.Serializable{Typ: "array"}
+	}
+	size := l.Len()
+
+	startindex, err := strconv.Atoi(args[1].Bulk)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LRANGE"}.Error()}
+	}
+	startindex = normalize_index(startindex, size)
+
+	endindex, err := strconv.Atoi(args[2].Bulk)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LRANGE"}.Error()}
+	}
+	endindex = normalize_index(endindex, size)
+
+	var results []resp.Serializable
+	item := l.Front()
+	for i := 0; i < startindex; i++ {
+		item = item.Next()
+	}
+
+	for i := startindex; i <= endindex; i++ {
+		results = append(results, resp.Serializable{Typ: "bulk", Bulk: item.Value.(string)})
+		item = item.Next()
+	}
+
+	return resp.Serializable{Typ: "array", Array: results}
 
 }
