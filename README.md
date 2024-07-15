@@ -36,7 +36,7 @@ This is a simple in-memory key-value store written in Go. All the commands are r
 - [RPUSH](https://redis.io/docs/latest/commands/rpush/)
 - [LINDEX](https://redis.io/docs/latest/commands/lindex/)
 - [LTRIM](https://redis.io/docs/latest/commands/ltrim/)
-
+- [LRANGE](https://redis.io/docs/latest/commands/lrange/)
 
 # Benchmark
 ```
