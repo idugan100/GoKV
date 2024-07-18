@@ -156,13 +156,13 @@ func ltrim(args []resp.Serializable) resp.Serializable {
 	if err != nil {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LTRIM"}.Error()}
 	}
-	startindex = normalize_index(startindex, size)
+	startindex, _ = normalize_index(startindex, size)
 
 	endindex, err := strconv.Atoi(args[2].Bulk)
 	if err != nil {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LTRIM"}.Error()}
 	}
-	endindex = normalize_index(endindex, size)
+	endindex, _ = normalize_index(endindex, size)
 
 	if startindex > endindex {
 		delete(listData, args[0].Bulk)
@@ -239,13 +239,13 @@ func lrange(args []resp.Serializable) resp.Serializable {
 	if err != nil {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LRANGE"}.Error()}
 	}
-	startindex = normalize_index(startindex, size)
+	startindex, _ = normalize_index(startindex, size)
 
 	endindex, err := strconv.Atoi(args[2].Bulk)
 	if err != nil {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LRANGE"}.Error()}
 	}
-	endindex = normalize_index(endindex, size)
+	endindex, _ = normalize_index(endindex, size)
 
 	var results []resp.Serializable
 	item := l.Front()
