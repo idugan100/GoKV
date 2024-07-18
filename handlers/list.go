@@ -261,3 +261,33 @@ func lrange(args []resp.Serializable) resp.Serializable {
 	return resp.Serializable{Typ: "array", Array: results}
 
 }
+
+func lset(args []resp.Serializable) resp.Serializable {
+	if len(args) != 3 {
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "LSET"}.Error()}
+	}
+	listMU.Lock()
+	defer listMU.Unlock()
+	l, ok := listData[args[0].Bulk]
+
+	if !ok {
+		return resp.Serializable{Typ: "error", Str: "key not found"}
+	}
+	index, err := strconv.Atoi(args[1].Bulk)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LSET"}.Error()}
+	}
+	normalized_index, ok := normalize_index(index, l.Len())
+
+	if !ok {
+		return resp.Serializable{Typ: "error", Str: "index out of bounds"}
+	}
+
+	element := l.Front()
+
+	for range normalized_index {
+		element = element.Next()
+	}
+	element.Value = args[2].Bulk
+	return resp.Serializable{Typ: "string", Str: "OK"}
+}
