@@ -47,6 +47,7 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"LINDEX":    lindex,
 	"LTRIM":     ltrim,
 	"LRANGE":    lrange,
+	"LSET":      lset,
 }
 
 type InvalidArgsNumberError struct {
@@ -72,15 +73,19 @@ func ClearData() {
 
 }
 
-func normalize_index(index int, size int) int {
+// returns the normal zero based index and a bool of if the index was out of bounds and was converted to the closest valid index
+func normalize_index(index int, size int) (int, bool) {
+	in_range := true
 	if index < 0 {
 		index = size + index
 		if index < 0 {
 			index = 0
+			in_range = false
 		}
 	}
 	if index >= size {
 		index = size - 1
+		in_range = false
 	}
-	return index
+	return index, in_range
 }
