@@ -111,13 +111,16 @@ var CommandTableTests = []TableTest{
 	{[]string{"*4\r\n$6\r\nLRANGE\r\n$3\r\nkey\r\n$1\r\n0\r\n$1\r\n1\r\n"}, "*0\r\n"},
 	{[]string{"*5\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$1\r\nc\r\n$1\r\nb\r\n$1\r\na\r\n", "*4\r\n$6\r\nLRANGE\r\n$3\r\nkey\r\n$1\r\n0\r\n$2\r\n-1\r\n"}, "*3\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n"},
 	{[]string{"*5\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$1\r\nc\r\n$1\r\nb\r\n$1\r\na\r\n", "*4\r\n$6\r\nLRANGE\r\n$3\r\nkey\r\n$2\r\n10\r\n$1\r\n0\r\n"}, "*0\r\n"},
-
 	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*3\r\n$4\r\nLSET\r\n$3\r\nkey\r\n$1\r\n1\r\n"}, handlers.InvalidArgsNumberError{Command: "LSET"}.Error()},
 	{[]string{"*4\r\n$4\r\nLSET\r\n$3\r\nkey\r\n$1\r\n1\r\n$3\r\nval\r\n"}, "key not found"},
 	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*4\r\n$4\r\nLSET\r\n$3\r\nkey\r\n$3\r\n100\r\n$3\r\nval\r\n"}, "index out of bounds"},
 	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*4\r\n$4\r\nLSET\r\n$3\r\nkey\r\n$4\r\n-100\r\n$3\r\nval\r\n"}, "index out of bounds"},
 	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*4\r\n$4\r\nLSET\r\n$3\r\nkey\r\n$1\r\na\r\n$3\r\nval\r\n"}, handlers.InvalidDataTypeError{Command: "LSET"}.Error()},
 	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*4\r\n$4\r\nLSET\r\n$3\r\nkey\r\n$1\r\n1\r\n$3\r\nval\r\n", "*3\r\n$6\r\nLINDEX\r\n$3\r\nkey\r\n$1\r\n1\r\n"}, "val"},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*4\r\n$4\r\nLSET\r\n$3\r\nkey\r\n$1\r\n1\r\n$3\r\nval\r\n", "*3\r\n$6\r\nLINDEX\r\n$3\r\nkey\r\n$1\r\n1\r\n"}, "val"},
+	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*1\r\n$6\r\nDBSIZE\r\n"}, "1"},
+	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*4\r\n$4\r\nhset\r\n$6\r\nlength\r\n$3\r\nkey\r\n$3\r\nval\r\n", "*1\r\n$6\r\nDBSIZE\r\n"}, "2"},
+	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*1\r\n$6\r\nDBSIZE\r\n"}, "2"},
 }
 
 func TestCommands(t *testing.T) {
