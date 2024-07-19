@@ -38,7 +38,7 @@ This is a simple in-memory key-value store written in Go. All the commands are r
 - [LTRIM](https://redis.io/docs/latest/commands/ltrim/)
 - [LRANGE](https://redis.io/docs/latest/commands/lrange/)
 - [LSET](https://redis.io/docs/latest/commands/lset/)
-
+- [DBSIZE](https://redis.io/docs/latest/commands/dbsize/)
 # Benchmark
 ```
 $ redis-benchmark -t set,get, -n 100000 -q                                                                                                                               
