@@ -26,3 +26,15 @@ func flushall(args []resp.Serializable) resp.Serializable {
 	listMU.Unlock()
 	return resp.Serializable{Typ: "string", Str: "OK"}
 }
+
+func dbsize(args []resp.Serializable) resp.Serializable {
+	setMU.RLock()
+	defer setMU.RUnlock()
+	listMU.RLock()
+	defer listMU.RUnlock()
+	hsetMU.RLock()
+	defer hsetMU.RUnlock()
+	total_keys := len(setData) + len(listData) + len(hsetData)
+
+	return resp.Serializable{Typ: "integer", Num: total_keys}
+}
