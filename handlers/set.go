@@ -245,7 +245,7 @@ func decrby(args []resp.Serializable) resp.Serializable {
 
 func renamenx(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
-		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "RENAME"}.Error()}
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "RENAMENX"}.Error()}
 	}
 	setMU.Lock()
 	defer setMU.Unlock()
