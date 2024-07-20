@@ -259,3 +259,22 @@ func rename(args []resp.Serializable) resp.Serializable {
 	setData[args[1].Bulk] = val
 	return resp.Serializable{Typ: "bulk", Bulk: "OK"}
 }
+
+func mget(args []resp.Serializable) resp.Serializable {
+	if len(args) < 1 {
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "MGET"}.Error()}
+	}
+	setMU.RLock()
+	defer setMU.RUnlock()
+	results := []resp.Serializable{}
+	for _, arg := range args {
+		val, ok := setData[arg.Bulk]
+		if !ok {
+			results = append(results, resp.Serializable{Typ: "null"})
+			continue
+		} else {
+			results = append(results, resp.Serializable{Typ: "bulk", Bulk: val})
+		}
+	}
+	return resp.Serializable{Typ: "array", Array: results}
+}
