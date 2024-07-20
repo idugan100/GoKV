@@ -21,6 +21,7 @@ This is a simple in-memory key-value store written in Go. All the commands are r
 - [DECR](https://redis.io/docs/latest/commands/decr/)
 - [DECRBY](https://redis.io/docs/latest/commands/decrby/)
 - [RENAME](https://redis.io/docs/latest/commands/rename/)
+- [RENAMENX](https://redis.io/docs/latest/commands/renamenx/)
 - [HSET](https://redis.io/docs/latest/commands/hset/)
 - [HGET](https://redis.io/docs/latest/commands/hget/)
 - [HEXISTS](https://redis.io/docs/latest/commands/hexists/)

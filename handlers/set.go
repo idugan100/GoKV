@@ -243,6 +243,29 @@ func decrby(args []resp.Serializable) resp.Serializable {
 	return resp.Serializable{Typ: "integer", Num: int(num)}
 }
 
+func renamenx(args []resp.Serializable) resp.Serializable {
+	if len(args) != 2 {
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "RENAMENX"}.Error()}
+	}
+	setMU.Lock()
+	defer setMU.Unlock()
+
+	val, ok := setData[args[0].Bulk]
+	if !ok {
+		return resp.Serializable{Typ: "error", Str: "key to be renamed not found"}
+	}
+
+	//return 0 if new key already exisits
+	_, ok = setData[args[1].Bulk]
+	if ok {
+		return resp.Serializable{Typ: "integer", Num: 0}
+	}
+
+	delete(setData, args[0].Bulk)
+	setData[args[1].Bulk] = val
+	return resp.Serializable{Typ: "integer", Num: 1}
+}
+
 func rename(args []resp.Serializable) resp.Serializable {
 	if len(args) != 2 {
 		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "RENAME"}.Error()}
