@@ -183,7 +183,7 @@ func (v Serializable) marshalError() []byte {
 }
 
 func (v Serializable) marshalNull() []byte {
-	return []byte("_\r\n")
+	return []byte("$-1\r\n")
 }
 
 func (v Serializable) ValidateIncoming() (Serializable, bool) {
