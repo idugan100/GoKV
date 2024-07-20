@@ -124,6 +124,10 @@ var CommandTableTests = []TableTest{
 	{[]string{"*1\r\n$4\r\nMGET\r\n"}, handlers.InvalidArgsNumberError{Command: "MGET"}.Error()},
 	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*3\r\n$4\r\nMGET\r\n$5\r\nhello\r\n$3\r\nkey\r\n"}, "*2\r\n$5\r\nworld\r\n$-1\r\n"},
 	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*1\r\n$9\r\nRANDOMKEY\r\n"}, "$5\r\nhello\r\n"},
+	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*3\r\n$8\r\nRENAMENX\r\n$5\r\nhello\r\n$3\r\nbye\r\n"}, "1"},
+	{[]string{"*3\r\n$8\r\nRENAMENX\r\n$5\r\nhello\r\n$3\r\nbye\r\n"}, "key to be renamed not found"},
+	{[]string{"*2\r\n$8\r\nRENAMENX\r\n$5\r\nhello\r\n"}, handlers.InvalidArgsNumberError{Command: "RENAMENX"}.Error()},
+	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*3\r\n$3\r\nset\r\n$3\r\nbye\r\n$5\r\nworld\r\n", "*3\r\n$8\r\nRENAMENX\r\n$5\r\nhello\r\n$3\r\nbye\r\n"}, "0"},
 }
 
 func TestCommands(t *testing.T) {
