@@ -121,6 +121,9 @@ var CommandTableTests = []TableTest{
 	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*1\r\n$6\r\nDBSIZE\r\n"}, "1"},
 	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*4\r\n$4\r\nhset\r\n$6\r\nlength\r\n$3\r\nkey\r\n$3\r\nval\r\n", "*1\r\n$6\r\nDBSIZE\r\n"}, "2"},
 	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\nb\r\n$1\r\nc\r\n", "*1\r\n$6\r\nDBSIZE\r\n"}, "2"},
+	{[]string{"*1\r\n$4\r\nMGET\r\n"}, handlers.InvalidArgsNumberError{Command: "MGET"}.Error()},
+	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*3\r\n$4\r\nMGET\r\n$5\r\nhello\r\n$3\r\nkey\r\n"}, "*2\r\n$5\r\nworld\r\n$-1\r\n"},
+	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*1\r\n$9\r\nRANDOMKEY\r\n"}, "$5\r\nhello\r\n"},
 }
 
 func TestCommands(t *testing.T) {
