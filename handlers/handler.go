@@ -49,6 +49,7 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"LTRIM":     ltrim,
 	"LRANGE":    lrange,
 	"LSET":      lset,
+	"LREM":      lrem,
 	"DBSIZE":    dbsize,
 	"MGET":      mget,
 }

@@ -38,6 +38,7 @@ This is a simple in-memory key-value store written in Go. All the commands are r
 - [LINDEX](https://redis.io/docs/latest/commands/lindex/)
 - [LTRIM](https://redis.io/docs/latest/commands/ltrim/)
 - [LRANGE](https://redis.io/docs/latest/commands/lrange/)
+- [LREM](https://redis.io/docs/latest/commands/lrem/)
 - [LSET](https://redis.io/docs/latest/commands/lset/)
 - [DBSIZE](https://redis.io/docs/latest/commands/dbsize/)
 - [MGET](https://redis.io/docs/latest/commands/mget/)

@@ -291,3 +291,69 @@ func lset(args []resp.Serializable) resp.Serializable {
 	element.Value = args[2].Bulk
 	return resp.Serializable{Typ: "string", Str: "OK"}
 }
+
+func lrem(args []resp.Serializable) resp.Serializable {
+	if len(args) != 3 {
+		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "LREM"}.Error()}
+	}
+
+	count, err := strconv.Atoi(args[1].Bulk)
+	if err != nil {
+		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "LREM"}.Error()}
+	}
+
+	listMU.RLock()
+	defer listMU.RUnlock()
+	l, ok := listData[args[0].Bulk]
+
+	if !ok {
+		return resp.Serializable{Typ: "integer", Num: 0}
+	}
+
+	element_for_removal := args[2].Bulk
+	num_removed := 0
+	if count == 0 {
+		element := l.Front()
+		for range l.Len() {
+			next := element.Next()
+			if element.Value.(string) == element_for_removal {
+
+				l.Remove(element)
+				num_removed++
+			}
+			element = next
+		}
+
+	} else if count > 0 {
+		element := l.Front()
+		for range l.Len() {
+			next := element.Next()
+			if element.Value.(string) == element_for_removal {
+				l.Remove(element)
+				num_removed++
+				if num_removed == count {
+					break
+				}
+			}
+			element = next
+		}
+	} else if count < 0 {
+		element := l.Back()
+		for range l.Len() {
+			next := element.Prev()
+			if element.Value.(string) == element_for_removal {
+
+				l.Remove(element)
+				num_removed++
+				if num_removed == count*-1 {
+					break
+				}
+			}
+			element = next
+		}
+	}
+	if l.Len() == 0 {
+		delete(listData, args[0].Bulk)
+	}
+	return resp.Serializable{Typ: "integer", Num: num_removed}
+}
