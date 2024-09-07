@@ -16,7 +16,7 @@ func lolwut(args []resp.Serializable) resp.Serializable {
 
 func flushall(args []resp.Serializable) resp.Serializable {
 	setMU.Lock()
-	setData = map[string]string{}
+	stringData = map[string]string{}
 	setMU.Unlock()
 	hsetMU.Lock()
 	hsetData = map[string]map[string]string{}
@@ -34,7 +34,7 @@ func dbsize(args []resp.Serializable) resp.Serializable {
 	defer listMU.RUnlock()
 	hsetMU.RLock()
 	defer hsetMU.RUnlock()
-	total_keys := len(setData) + len(listData) + len(hsetData)
+	total_keys := len(stringData) + len(listData) + len(hsetData)
 
 	return resp.Serializable{Typ: "integer", Num: total_keys}
 }

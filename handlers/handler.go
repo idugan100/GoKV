@@ -8,7 +8,7 @@ import (
 	"github.com/idugan100/GoKV/resp"
 )
 
-var setData = map[string]string{}
+var stringData = map[string]string{}
 var setMU = sync.RWMutex{}
 var hsetData = map[string]map[string]string{}
 var hsetMU = sync.RWMutex{}
@@ -71,7 +71,7 @@ func (i InvalidDataTypeError) Error() string {
 }
 
 func ClearData() {
-	setData = map[string]string{}
+	stringData = map[string]string{}
 	hsetData = map[string]map[string]string{}
 	listData = map[string]*list.List{}
 

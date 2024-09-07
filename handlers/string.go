@@ -14,7 +14,7 @@ func set(args []resp.Serializable) resp.Serializable {
 	key := args[0].Bulk
 	val := args[1].Bulk
 	setMU.Lock()
-	setData[key] = val
+	stringData[key] = val
 	setMU.Unlock()
 
 	return resp.Serializable{Typ: "bulk", Bulk: "OK"}
@@ -27,7 +27,7 @@ func get(args []resp.Serializable) resp.Serializable {
 	var val string
 
 	setMU.RLock()
-	val, ok := setData[args[0].Bulk]
+	val, ok := stringData[args[0].Bulk]
 	setMU.RUnlock()
 	if !ok {
 		return resp.Serializable{Typ: "null"}
@@ -42,10 +42,10 @@ func del(args []resp.Serializable) resp.Serializable {
 	deletedCounter := 0
 	setMU.Lock()
 	for i := 0; i < len(args); i++ {
-		_, ok := setData[args[i].Bulk]
+		_, ok := stringData[args[i].Bulk]
 		if ok {
 			deletedCounter++
-			delete(setData, args[i].Bulk)
+			delete(stringData, args[i].Bulk)
 		}
 	}
 	setMU.Unlock()
@@ -53,15 +53,15 @@ func del(args []resp.Serializable) resp.Serializable {
 }
 
 func randkey(args []resp.Serializable) resp.Serializable {
-	if len(setData) == 0 {
+	if len(stringData) == 0 {
 		return resp.Serializable{Typ: "null"}
 	}
 
-	randNum := rand.Intn(len(setData))
+	randNum := rand.Intn(len(stringData))
 	var randKey string
 	counter := 0
 	setMU.RLock()
-	for key := range setData {
+	for key := range stringData {
 		if counter == randNum {
 			randKey = key
 			break
@@ -82,7 +82,7 @@ func exists(args []resp.Serializable) resp.Serializable {
 	defer setMU.RUnlock()
 
 	for _, a := range args {
-		_, ok := setData[a.Bulk]
+		_, ok := stringData[a.Bulk]
 		if ok {
 			counter++
 		}
@@ -95,7 +95,7 @@ func strlen(args []resp.Serializable) resp.Serializable {
 		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "STRLEN"}.Error()}
 	}
 	setMU.RLock()
-	val := setData[args[0].Bulk]
+	val := stringData[args[0].Bulk]
 	setMU.RUnlock()
 
 	return resp.Serializable{Typ: "integer", Num: len(val)}
@@ -107,8 +107,8 @@ func getset(args []resp.Serializable) resp.Serializable {
 		return resp.Serializable{Typ: "error", Str: InvalidArgsNumberError{Command: "GETSET"}.Error()}
 	}
 	setMU.Lock()
-	oldSerializable, ok := setData[args[0].Bulk]
-	setData[args[0].Bulk] = args[1].Bulk
+	oldSerializable, ok := stringData[args[0].Bulk]
+	stringData[args[0].Bulk] = args[1].Bulk
 	setMU.Unlock()
 
 	if !ok {
@@ -126,13 +126,13 @@ func setnx(args []resp.Serializable) resp.Serializable {
 	setMU.Lock()
 	defer setMU.Unlock()
 
-	_, ok := setData[args[0].Bulk]
+	_, ok := stringData[args[0].Bulk]
 
 	if ok {
 		return resp.Serializable{Typ: "integer", Num: 0}
 	}
 
-	setData[args[0].Bulk] = args[1].Bulk
+	stringData[args[0].Bulk] = args[1].Bulk
 	return resp.Serializable{Typ: "integer", Num: 1}
 
 }
@@ -144,10 +144,10 @@ func incr(args []resp.Serializable) resp.Serializable {
 	setMU.Lock()
 	defer setMU.Unlock()
 
-	val, ok := setData[args[0].Bulk]
+	val, ok := stringData[args[0].Bulk]
 
 	if !ok {
-		setData[args[0].Bulk] = "0"
+		stringData[args[0].Bulk] = "0"
 		val = "0"
 	}
 
@@ -156,7 +156,7 @@ func incr(args []resp.Serializable) resp.Serializable {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "INCR"}.Error()}
 	}
 	num++
-	setData[args[0].Bulk] = strconv.Itoa(int(num))
+	stringData[args[0].Bulk] = strconv.Itoa(int(num))
 
 	return resp.Serializable{Typ: "integer", Num: int(num)}
 }
@@ -168,10 +168,10 @@ func incrby(args []resp.Serializable) resp.Serializable {
 	setMU.Lock()
 	defer setMU.Unlock()
 
-	val, ok := setData[args[0].Bulk]
+	val, ok := stringData[args[0].Bulk]
 
 	if !ok {
-		setData[args[0].Bulk] = "0"
+		stringData[args[0].Bulk] = "0"
 		val = "0"
 	}
 
@@ -185,7 +185,7 @@ func incrby(args []resp.Serializable) resp.Serializable {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "INCRBY"}.Error()}
 	}
 	num += incrementAmount
-	setData[args[0].Bulk] = strconv.Itoa(int(num))
+	stringData[args[0].Bulk] = strconv.Itoa(int(num))
 
 	return resp.Serializable{Typ: "integer", Num: int(num)}
 }
@@ -197,10 +197,10 @@ func decr(args []resp.Serializable) resp.Serializable {
 	setMU.Lock()
 	defer setMU.Unlock()
 
-	val, ok := setData[args[0].Bulk]
+	val, ok := stringData[args[0].Bulk]
 
 	if !ok {
-		setData[args[0].Bulk] = "0"
+		stringData[args[0].Bulk] = "0"
 		val = "0"
 	}
 
@@ -209,7 +209,7 @@ func decr(args []resp.Serializable) resp.Serializable {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "DECR"}.Error()}
 	}
 	num--
-	setData[args[0].Bulk] = strconv.Itoa(int(num))
+	stringData[args[0].Bulk] = strconv.Itoa(int(num))
 
 	return resp.Serializable{Typ: "integer", Num: int(num)}
 }
@@ -221,10 +221,10 @@ func decrby(args []resp.Serializable) resp.Serializable {
 	setMU.Lock()
 	defer setMU.Unlock()
 
-	val, ok := setData[args[0].Bulk]
+	val, ok := stringData[args[0].Bulk]
 
 	if !ok {
-		setData[args[0].Bulk] = "0"
+		stringData[args[0].Bulk] = "0"
 		val = "0"
 	}
 
@@ -238,7 +238,7 @@ func decrby(args []resp.Serializable) resp.Serializable {
 		return resp.Serializable{Typ: "error", Str: InvalidDataTypeError{Command: "DECRBY"}.Error()}
 	}
 	num -= decrementAmount
-	setData[args[0].Bulk] = strconv.Itoa(int(num))
+	stringData[args[0].Bulk] = strconv.Itoa(int(num))
 
 	return resp.Serializable{Typ: "integer", Num: int(num)}
 }
@@ -250,19 +250,19 @@ func renamenx(args []resp.Serializable) resp.Serializable {
 	setMU.Lock()
 	defer setMU.Unlock()
 
-	val, ok := setData[args[0].Bulk]
+	val, ok := stringData[args[0].Bulk]
 	if !ok {
 		return resp.Serializable{Typ: "error", Str: "key to be renamed not found"}
 	}
 
 	//return 0 if new key already exisits
-	_, ok = setData[args[1].Bulk]
+	_, ok = stringData[args[1].Bulk]
 	if ok {
 		return resp.Serializable{Typ: "integer", Num: 0}
 	}
 
-	delete(setData, args[0].Bulk)
-	setData[args[1].Bulk] = val
+	delete(stringData, args[0].Bulk)
+	stringData[args[1].Bulk] = val
 	return resp.Serializable{Typ: "integer", Num: 1}
 }
 
@@ -273,13 +273,13 @@ func rename(args []resp.Serializable) resp.Serializable {
 	setMU.Lock()
 	defer setMU.Unlock()
 
-	val, ok := setData[args[0].Bulk]
+	val, ok := stringData[args[0].Bulk]
 	if !ok {
 		return resp.Serializable{Typ: "error", Str: "key to be renamed not found"}
 	}
 
-	delete(setData, args[0].Bulk)
-	setData[args[1].Bulk] = val
+	delete(stringData, args[0].Bulk)
+	stringData[args[1].Bulk] = val
 	return resp.Serializable{Typ: "bulk", Bulk: "OK"}
 }
 
@@ -291,7 +291,7 @@ func mget(args []resp.Serializable) resp.Serializable {
 	defer setMU.RUnlock()
 	results := []resp.Serializable{}
 	for _, arg := range args {
-		val, ok := setData[arg.Bulk]
+		val, ok := stringData[arg.Bulk]
 		if !ok {
 			results = append(results, resp.Serializable{Typ: "null"})
 			continue
