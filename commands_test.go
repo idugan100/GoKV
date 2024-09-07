@@ -148,7 +148,7 @@ func TestCommands(t *testing.T) {
 		if !strings.Contains(conn.String(), test.ExpectedOutput) {
 			t.Errorf("expected result '%s' got response of '%s'", test.ExpectedOutput, conn.String())
 			for _, command := range test.Commands {
-				t.Logf(command)
+				t.Log(command)
 			}
 		}
 
