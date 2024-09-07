@@ -128,6 +128,12 @@ var CommandTableTests = []TableTest{
 	{[]string{"*3\r\n$8\r\nRENAMENX\r\n$5\r\nhello\r\n$3\r\nbye\r\n"}, "key to be renamed not found"},
 	{[]string{"*2\r\n$8\r\nRENAMENX\r\n$5\r\nhello\r\n"}, handlers.InvalidArgsNumberError{Command: "RENAMENX"}.Error()},
 	{[]string{"*3\r\n$3\r\nset\r\n$5\r\nhello\r\n$5\r\nworld\r\n", "*3\r\n$3\r\nset\r\n$3\r\nbye\r\n$5\r\nworld\r\n", "*3\r\n$8\r\nRENAMENX\r\n$5\r\nhello\r\n$3\r\nbye\r\n"}, "0"},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\na\r\n$1\r\nc\r\n", "*4\r\n$4\r\nLREM\r\n$3\r\nkey\r\n$1\r\n0\r\n$1\r\na\r\n"}, "2"},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\na\r\n$1\r\nc\r\n", "*4\r\n$4\r\nLREM\r\n$3\r\nkey\r\n$2\r\n-1\r\n$1\r\nc\r\n"}, "1"},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\na\r\n$1\r\nc\r\n", "*4\r\n$4\r\nLREM\r\n$3\r\nkey\r\n$1\r\n2\r\n$1\r\na\r\n"}, "2"},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\na\r\n$1\r\na\r\n", "*4\r\n$4\r\nLREM\r\n$3\r\nkey\r\n$1\r\n0\r\n$1\r\na\r\n", "*4\r\n$6\r\nLRANGE\r\n$3\r\nkey\r\n$1\r\n0\r\n$2\r\n-1\r\n"}, "*0"},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\na\r\n$1\r\nc\r\n", "*4\r\n$4\r\nLREM\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\na\r\n"}, handlers.InvalidDataTypeError{Command: "LREM"}.Error()},
+	{[]string{"*5\r\n$5\r\nRPUSH\r\n$3\r\nkey\r\n$1\r\na\r\n$1\r\na\r\n$1\r\nc\r\n", "*3\r\n$4\r\nLREM\r\n$3\r\nkey\r\n$1\r\n2\r\n$1\r\n"}, handlers.InvalidArgsNumberError{Command: "LREM"}.Error()},
 }
 
 func TestCommands(t *testing.T) {
