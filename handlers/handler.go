@@ -4,14 +4,47 @@ import (
 	"container/list"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/idugan100/GoKV/resp"
 )
 
-var stringData = map[string]string{}
-var setMU = sync.RWMutex{}
+type stringDataItem struct {
+	str         string
+	expiration  time.Time
+	will_expire bool
+}
+
+var stringData = map[string]stringDataItem{}
+var stringMU = sync.RWMutex{}
+
+func getString(key string) (string, bool) {
+	// get item
+	stringMU.RLock()
+	val, ok := stringData[key]
+	stringMU.RUnlock()
+
+	// if item is not found
+	if !ok {
+		return "", false
+	}
+
+	is_expired := val.will_expire && (time.Now().Compare(val.expiration) != -1)
+
+	// if item is expired
+	if is_expired {
+		stringMU.Lock()
+		delete(stringData, key)
+		stringMU.Unlock()
+		return "", false
+	}
+
+	// if item is found and not expired
+	return val.str, true
+}
+
 var hsetData = map[string]map[string]string{}
-var hsetMU = sync.RWMutex{}
+var hstringMU = sync.RWMutex{}
 var listData = map[string]*list.List{}
 var listMU = sync.RWMutex{}
 var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
@@ -52,6 +85,9 @@ var Handlers = map[string]func([]resp.Serializable) resp.Serializable{
 	"LREM":      lrem,
 	"DBSIZE":    dbsize,
 	"MGET":      mget,
+	"TTL":       ttl,
+	"PTTL":      pttl,
+	"EXPIRE":    expire,
 }
 
 type InvalidArgsNumberError struct {
@@ -71,7 +107,7 @@ func (i InvalidDataTypeError) Error() string {
 }
 
 func ClearData() {
-	stringData = map[string]string{}
+	stringData = map[string]stringDataItem{}
 	hsetData = map[string]map[string]string{}
 	listData = map[string]*list.List{}
 
