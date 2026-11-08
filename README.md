@@ -42,6 +42,9 @@ This is a simple in-memory key-value store written in Go. All the commands are r
 - [LSET](https://redis.io/docs/latest/commands/lset/)
 - [DBSIZE](https://redis.io/docs/latest/commands/dbsize/)
 - [MGET](https://redis.io/docs/latest/commands/mget/)
+- [TTL](https://redis.io/docs/latest/commands/ttl/)
+- [PTTL](https://redis.io/docs/latest/commands/pttl/)
+- [EXPIRE](https://redis.io/docs/latest/commands/expire/)
 
 # Benchmark
 ```
